@@ -314,7 +314,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         var x: Int = (middle - mTipView.measuredWidth * location).toInt()
         var y: Int = mTargetRect.bottom
 
-        x = Math.max(0, x)
+        x = Math.min(Math.max(0, x), screenWidth - mTipView.measuredWidth)
         y = Math.max(0, y)
         mTipView.setWindowLocation(x, y)
         showAtLocation(mTargetView, Gravity.NO_GRAVITY, x, y)

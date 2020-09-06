@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         val text = findViewById<TextView>(R.id.text)
 
         val binding = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-//        setViewMatchScreen(binding.root)
+        setViewMatchScreen(binding.root)
 
         val tip = ViewToolTip.on(this, text)
             .customView(binding.root)
