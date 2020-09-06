@@ -1,0 +1,3 @@
+include ':viewToolTip'
+include ':app'
+rootProject.name = "ViewToolTip"
