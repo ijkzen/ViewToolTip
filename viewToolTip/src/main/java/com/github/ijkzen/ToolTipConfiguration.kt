@@ -8,8 +8,6 @@ interface ToolTipConfiguration {
 
     fun widthMatchParent(match: Boolean): ViewToolTip
 
-    fun showOnDialogFragment(dialog: Boolean): ViewToolTip
-
     fun gravity(gravity: TipGravity): ViewToolTip
 
     fun arrowWidth(width: Int): ViewToolTip

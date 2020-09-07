@@ -1,13 +1,15 @@
 package tech.ijkzen.viewtooltip
 
-import android.R
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
+import android.graphics.PixelFormat
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
-import android.view.ViewGroup
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.DialogFragment
 import com.github.ijkzen.TipGravity
 import com.github.ijkzen.ViewToolTip
@@ -43,7 +45,7 @@ class DemoDialogFragment : DialogFragment() {
 
         val window = dialog?.window
         window?.let {
-            window.setBackgroundDrawableResource(R.color.transparent)
+            window.setBackgroundDrawableResource(android.R.color.transparent)
             val params: WindowManager.LayoutParams = window.getAttributes()
             params.gravity = Gravity.BOTTOM
             params.width = resources.displayMetrics.widthPixels
@@ -63,7 +65,7 @@ class DemoDialogFragment : DialogFragment() {
 
         mBinding = ActivityMainBinding.inflate(inflater, container, false)
 
-        val binding1 = DialogShowBinding.inflate(inflater, null, false)
+        val binding1 = DialogShowBinding.inflate(layoutInflater, null, false)
         val binding2 = DialogShowBinding.inflate(inflater, null, false)
         val binding3 = DialogShowBinding.inflate(inflater, null, false)
         val binding4 = DialogShowBinding.inflate(inflater, null, false)
@@ -73,18 +75,16 @@ class DemoDialogFragment : DialogFragment() {
         val binding8 = DialogShowBinding.inflate(inflater, null, false)
         val binding9 = DialogShowBinding.inflate(inflater, null, false)
 
-        val tip1 = ViewToolTip.on(requireContext(), mBinding.text1)
+        val tip1 = ViewToolTip.on(mBinding.text1)
             .customView(binding1.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
-            .showOnDialogFragment(true)
 
         mBinding.text1.setOnClickListener {
             tip1.gravity(list[count++ % 4])
             tip1.show()
         }
 
-        val tip2 = ViewToolTip.on(requireContext(), mBinding.text2)
+        val tip2 = ViewToolTip.on(mBinding.text2)
             .customView(binding2.root)
             .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
@@ -94,9 +94,8 @@ class DemoDialogFragment : DialogFragment() {
             tip2.show()
         }
 
-        val tip3 = ViewToolTip.on(requireContext(), mBinding.text3)
+        val tip3 = ViewToolTip.on(mBinding.text3)
             .customView(binding3.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text3.setOnClickListener {
@@ -104,9 +103,8 @@ class DemoDialogFragment : DialogFragment() {
             tip3.show()
         }
 
-        val tip4 = ViewToolTip.on(requireContext(), mBinding.text4)
+        val tip4 = ViewToolTip.on(mBinding.text4)
             .customView(binding4.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text4.setOnClickListener {
@@ -114,9 +112,8 @@ class DemoDialogFragment : DialogFragment() {
             tip4.show()
         }
 
-        val tip5 = ViewToolTip.on(requireContext(), mBinding.text5)
+        val tip5 = ViewToolTip.on(mBinding.text5)
             .customView(binding5.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.TOP)
 
         mBinding.text5.setOnClickListener {
@@ -124,9 +121,8 @@ class DemoDialogFragment : DialogFragment() {
             tip5.show()
         }
 
-        val tip6 = ViewToolTip.on(requireContext(), mBinding.text6)
+        val tip6 = ViewToolTip.on(mBinding.text6)
             .customView(binding6.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text6.setOnClickListener {
@@ -134,9 +130,8 @@ class DemoDialogFragment : DialogFragment() {
             tip6.show()
         }
 
-        val tip7 = ViewToolTip.on(requireContext(), mBinding.text7)
+        val tip7 = ViewToolTip.on(mBinding.text7)
             .customView(binding7.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text7.setOnClickListener {
@@ -144,9 +139,8 @@ class DemoDialogFragment : DialogFragment() {
             tip7.show()
         }
 
-        val tip8 = ViewToolTip.on(requireContext(), mBinding.text8)
+        val tip8 = ViewToolTip.on(mBinding.text8)
             .customView(binding8.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text8.setOnClickListener {
@@ -154,9 +148,8 @@ class DemoDialogFragment : DialogFragment() {
             tip8.show()
         }
 
-        val tip9 = ViewToolTip.on(requireContext(), mBinding.text9)
+        val tip9 = ViewToolTip.on(mBinding.text9)
             .customView(binding9.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text9.setOnClickListener {

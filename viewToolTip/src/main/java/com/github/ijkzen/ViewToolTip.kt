@@ -13,8 +13,7 @@ import android.widget.PopupWindow
 
 open class ViewToolTip(private val context: Context, protected val mTargetView: View) :
     PopupWindow(context), ToolTipConfiguration {
-    private var mWindowManager: WindowManager =
-        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private lateinit var mWindowManager: WindowManager
     private var mTipView: ToolTipView = ToolTipView(context)
     private val mTargetRect = Rect()
     private lateinit var mMaskView: View
@@ -48,8 +47,8 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         const val DEFAULT_DURATION: Long = 15000
         const val AUTO_HIDE_MESSAGE = 0XFFF8
 
-        fun on(context: Context, target: View): ViewToolTip {
-            return ViewToolTip(context, target)
+        fun on(target: View): ViewToolTip {
+            return ViewToolTip(target.context, target)
         }
     }
 
@@ -62,7 +61,6 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
             exitTransition = Fade()
         }
         initValueAnimator()
-        initMaskView()
     }
 
     private fun initTargetRect() {
@@ -102,13 +100,13 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     }
 
     private fun initMaskView() {
+        mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         mMaskLayoutParam = WindowManager.LayoutParams()
         mMaskLayoutParam.width = WindowManager.LayoutParams.MATCH_PARENT
         mMaskLayoutParam.height = WindowManager.LayoutParams.MATCH_PARENT
         mMaskLayoutParam.format = PixelFormat.TRANSLUCENT
         mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
         mMaskLayoutParam.token = mTargetView.windowToken
-        mMaskLayoutParam.flags.and(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv())
 
         mMaskView = View(context)
         mMaskView.fitsSystemWindows = false
@@ -240,11 +238,15 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         x = Math.max(0, x)
         y = Math.min(screenHeight - mTipView.measuredHeight, Math.max(0, y))
 
-        val top = Math.max(mTargetRect.top, y)
-        val bottom = Math.min(y + mTipView.measuredHeight, mTargetRect.bottom)
-        val delta = bottom - top
-        if (delta < 4.2 * padding) {
-            y += (4.2 * padding).toInt() - delta
+        val targetPadding = 3 * padding
+        val topDistance = y - mTargetRect.top
+        if (topDistance < targetPadding) {
+            y -= (targetPadding - topDistance)
+        }
+
+        val bottomDistance = (y + mTipView.measuredHeight) - mTargetRect.bottom
+        if (bottomDistance < targetPadding) {
+            y += (targetPadding - bottomDistance)
         }
 
         showAtLocation(x, y)
@@ -333,11 +335,15 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         x = Math.max(0, x)
         y = Math.min(screenHeight - mTipView.measuredHeight, Math.max(0, y))
 
-        val top = Math.max(mTargetRect.top, y)
-        val bottom = Math.min(y + mTipView.measuredHeight, mTargetRect.bottom)
-        val delta = bottom - top
-        if (delta < 4.2 * padding) {
-            y += (4.2 * padding).toInt() - delta
+        val targetPadding = 3 * padding
+        val topDistance = y - mTargetRect.top
+        if (topDistance < targetPadding) {
+            y -= (targetPadding - topDistance)
+        }
+
+        val bottomDistance = (y + mTipView.measuredHeight) - mTargetRect.bottom
+        if (bottomDistance < targetPadding) {
+            y += (targetPadding - bottomDistance)
         }
 
         showAtLocation(x, y)
@@ -389,8 +395,10 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     }
 
     private fun showAtLocation(x: Int, y: Int) {
-        mTipView.setWindowLocation(x, y)
-        showAtLocation(mTargetView, Gravity.NO_GRAVITY, x, y)
+        val finalX = if (x < 0) 0 else x
+        val finalY = if (y < 0) 0 else y
+        mTipView.setWindowLocation(finalX, finalY)
+        showAtLocation(mTargetView, Gravity.NO_GRAVITY, finalX, finalY)
     }
 
     private fun showGravity(tipGravity: TipGravity) {
@@ -422,6 +430,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
             return
         }
 
+        initMaskView()
         if (isMaskAttach2Window()) {
             mWindowManager.removeView(mMaskView)
         }
@@ -450,15 +459,6 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
     override fun widthMatchParent(match: Boolean): ViewToolTip {
         isWidthMatchParent = match
-        return this
-    }
-
-    override fun showOnDialogFragment(dialog: Boolean): ViewToolTip {
-        if (dialog) {
-            mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG
-        } else {
-            mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
-        }
         return this
     }
 

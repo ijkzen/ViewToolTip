@@ -38,9 +38,8 @@ class MainActivity : AppCompatActivity() {
         val binding8 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
         val binding9 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
 
-        val tip1 = ViewToolTip.on(this, mBinding.text1)
+        val tip1 = ViewToolTip.on(mBinding.text1)
             .customView(binding1.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text1.setOnClickListener {
@@ -48,9 +47,8 @@ class MainActivity : AppCompatActivity() {
             tip1.show()
         }
 
-        val tip2 = ViewToolTip.on(this, mBinding.text2)
+        val tip2 = ViewToolTip.on(mBinding.text2)
             .customView(binding2.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text2.setOnClickListener {
@@ -58,9 +56,8 @@ class MainActivity : AppCompatActivity() {
             tip2.show()
         }
 
-        val tip3 = ViewToolTip.on(this, mBinding.text3)
+        val tip3 = ViewToolTip.on(mBinding.text3)
             .customView(binding3.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text3.setOnClickListener {
@@ -68,9 +65,8 @@ class MainActivity : AppCompatActivity() {
             tip3.show()
         }
 
-        val tip4 = ViewToolTip.on(this, mBinding.text4)
+        val tip4 = ViewToolTip.on(mBinding.text4)
             .customView(binding4.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text4.setOnClickListener {
@@ -78,9 +74,8 @@ class MainActivity : AppCompatActivity() {
             tip4.show()
         }
 
-        val tip5 = ViewToolTip.on(this, mBinding.text5)
+        val tip5 = ViewToolTip.on(mBinding.text5)
             .customView(binding5.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.TOP)
 
         mBinding.text5.setOnClickListener {
@@ -88,9 +83,8 @@ class MainActivity : AppCompatActivity() {
             tip5.show()
         }
 
-        val tip6 = ViewToolTip.on(this, mBinding.text6)
+        val tip6 = ViewToolTip.on(mBinding.text6)
             .customView(binding6.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text6.setOnClickListener {
@@ -98,9 +92,8 @@ class MainActivity : AppCompatActivity() {
             tip6.show()
         }
 
-        val tip7 = ViewToolTip.on(this, mBinding.text7)
+        val tip7 = ViewToolTip.on(mBinding.text7)
             .customView(binding7.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text7.setOnClickListener {
@@ -108,9 +101,8 @@ class MainActivity : AppCompatActivity() {
             tip7.show()
         }
 
-        val tip8 = ViewToolTip.on(this, mBinding.text8)
+        val tip8 = ViewToolTip.on(mBinding.text8)
             .customView(binding8.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text8.setOnClickListener {
@@ -118,9 +110,8 @@ class MainActivity : AppCompatActivity() {
             tip8.show()
         }
 
-        val tip9 = ViewToolTip.on(this, mBinding.text9)
+        val tip9 = ViewToolTip.on(mBinding.text9)
             .customView(binding9.root)
-            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text9.setOnClickListener {

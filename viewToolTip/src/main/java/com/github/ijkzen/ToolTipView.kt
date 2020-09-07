@@ -24,7 +24,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     private var mWindowY: Int = 0
     private var start = 0
     private var end = 0
-    private val mLocationPaint = Paint()
 
     constructor(context: Context) : super(context)
 
@@ -41,9 +40,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         mBubblePaint.isAntiAlias = true
         mBubblePaint.style = Paint.Style.FILL
         mBubblePath.fillType = Path.FillType.EVEN_ODD
-
-        mLocationPaint.color = Color.RED
-        mLocationPaint.strokeWidth = 16F
     }
 
     fun setTargetRect(targetRect: Rect) {
