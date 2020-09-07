@@ -4,4 +4,8 @@
     <item
         android:id="@+id/dialog"
         android:title="open dialog" />
+
+    <item
+        android:id="@+id/fragment"
+        android:title="open fragment" />
 </menu>

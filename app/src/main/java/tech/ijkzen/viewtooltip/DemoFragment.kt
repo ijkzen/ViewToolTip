@@ -1,18 +1,17 @@
 package tech.ijkzen.viewtooltip
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.github.ijkzen.TipGravity
 import com.github.ijkzen.ViewToolTip
 import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
 
-
-class MainActivity : AppCompatActivity() {
+class DemoFragment : Fragment() {
+    private lateinit var mBinding: ActivityMainBinding
 
     private val list = arrayListOf<TipGravity>(
         TipGravity.LEFT,
@@ -22,22 +21,23 @@ class MainActivity : AppCompatActivity() {
     )
     private var count = 0
 
-    private lateinit var mBinding: ActivityMainBinding
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        mBinding = ActivityMainBinding.inflate(inflater, container, false)
+        mBinding = ActivityMainBinding.inflate(inflater, container, false)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(mBinding.root)
-
-        val binding1 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding2 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding3 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding4 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding5 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding6 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding7 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding8 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding9 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding1 = DialogShowBinding.inflate(layoutInflater, null, false)
+        val binding2 = DialogShowBinding.inflate(inflater, null, false)
+        val binding3 = DialogShowBinding.inflate(inflater, null, false)
+        val binding4 = DialogShowBinding.inflate(inflater, null, false)
+        val binding5 = DialogShowBinding.inflate(inflater, null, false)
+        val binding6 = DialogShowBinding.inflate(inflater, null, false)
+        val binding7 = DialogShowBinding.inflate(inflater, null, false)
+        val binding8 = DialogShowBinding.inflate(inflater, null, false)
+        val binding9 = DialogShowBinding.inflate(inflater, null, false)
 
         val tip1 = ViewToolTip.on(mBinding.text1)
             .customView(binding1.root)
@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         val tip2 = ViewToolTip.on(mBinding.text2)
             .customView(binding2.root)
+            .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
 
         mBinding.text2.setOnClickListener {
@@ -119,20 +120,8 @@ class MainActivity : AppCompatActivity() {
             tip9.gravity(list[count++ % 4])
             tip9.show()
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.more, menu)
-        return true
-    }
+        return mBinding.root
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.dialog) {
-            DemoDialogFragment().show(supportFragmentManager, DemoDialogFragment::class.java.name)
-        } else if (item.itemId == R.id.fragment) {
-            startActivity(Intent(this, FragmentActivity::class.java))
-        }
-
-        return super.onOptionsItemSelected(item)
     }
 }
