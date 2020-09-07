@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="20dp"
         android:textSize="14sp"
         android:textColor="@android:color/darker_gray"
         android:text="Internet access is the ability of individuals and organizations to connect to the Internet using computer terminals, computers, and other devices; and to access services such as email and the World Wide Web. Internet access is sold by Internet service providers (ISPs) delivering connectivity at a wide range of data transfer rates via various networking technologies. Many organizations, including a growing number of municipal entities, also provide cost-free wireless access and landlines. "

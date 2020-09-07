@@ -2,6 +2,8 @@ package tech.ijkzen.viewtooltip
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.github.ijkzen.TipGravity
 import com.github.ijkzen.ViewToolTip
@@ -40,7 +42,6 @@ class MainActivity : AppCompatActivity() {
             .customView(binding1.root)
             .isAllowHideByClickMask(false)
             .gravity(TipGravity.BOTTOM)
-            .widthMatchParent(true)
 
         mBinding.text1.setOnClickListener {
             tip1.gravity(list[count++ % 4])
@@ -126,5 +127,18 @@ class MainActivity : AppCompatActivity() {
             tip9.gravity(list[count++ % 4])
             tip9.show()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.more, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.dialog) {
+            DemoDialogFragment().show(supportFragmentManager, DemoDialogFragment::class.java.name)
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

@@ -108,6 +108,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         mMaskLayoutParam.format = PixelFormat.TRANSLUCENT
         mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
         mMaskLayoutParam.token = mTargetView.windowToken
+        mMaskLayoutParam.flags.and(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv())
 
         mMaskView = View(context)
         mMaskView.fitsSystemWindows = false
@@ -435,6 +436,15 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
     override fun widthMatchParent(match: Boolean): ViewToolTip {
         isWidthMatchParent = match
+        return this
+    }
+
+    override fun showOnDialogFragment(dialog: Boolean): ViewToolTip {
+        if (dialog) {
+            mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG
+        } else {
+            mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
+        }
         return this
     }
 
