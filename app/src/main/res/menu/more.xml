@@ -16,4 +16,8 @@
     <item
         android:id="@+id/view_page_activity"
         android:title="open view page activity" />
+
+    <item
+        android:id="@+id/view_page_fragment"
+        android:title="open view page fragment" />
 </menu>

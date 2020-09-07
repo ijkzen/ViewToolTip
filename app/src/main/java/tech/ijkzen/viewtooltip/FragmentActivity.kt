@@ -19,8 +19,11 @@ class FragmentActivity : AppCompatActivity() {
         if ("fragment" == action) {
             val fragment = DemoFragment()
             transaction.add(R.id.content, fragment, DemoFragment::class.java.name)
-        } else {
+        } else if ("child_fragment" == action) {
             val fragment = ParentFragment()
+            transaction.add(R.id.content, fragment, ParentFragment::class.java.name)
+        } else if ("fragment_view_pager" == action) {
+            val fragment = ViewPagerFragment()
             transaction.add(R.id.content, fragment, ParentFragment::class.java.name)
         }
         transaction.commit()
