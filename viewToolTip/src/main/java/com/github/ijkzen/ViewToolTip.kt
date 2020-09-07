@@ -240,6 +240,13 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         x = Math.max(0, x)
         y = Math.min(screenHeight - mTipView.measuredHeight, Math.max(0, y))
 
+        val top = Math.max(mTargetRect.top, y)
+        val bottom = Math.min(y + mTipView.measuredHeight, mTargetRect.bottom)
+        val delta = bottom - top
+        if (delta < 4.2 * padding) {
+            y += (4.2 * padding).toInt() - delta
+        }
+
         showAtLocation(x, y)
     }
 
@@ -325,6 +332,13 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
         x = Math.max(0, x)
         y = Math.min(screenHeight - mTipView.measuredHeight, Math.max(0, y))
+
+        val top = Math.max(mTargetRect.top, y)
+        val bottom = Math.min(y + mTipView.measuredHeight, mTargetRect.bottom)
+        val delta = bottom - top
+        if (delta < 4.2 * padding) {
+            y += (4.2 * padding).toInt() - delta
+        }
 
         showAtLocation(x, y)
     }
