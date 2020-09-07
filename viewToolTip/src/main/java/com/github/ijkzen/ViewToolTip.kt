@@ -134,7 +134,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
             return true
         }
 
-        when (mTipGravity) {
+        when (tipGravity) {
             TipGravity.LEFT -> {
                 return mTargetRect.left > 6 * padding && mTargetRect.top > padding
             }
@@ -250,7 +250,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         var x: Int = (middle - mTipView.measuredWidth * location).toInt()
         var y: Int = mTargetRect.top - mTipView.measuredHeight
 
-        x = Math.max(0, x)
+        x = Math.min(Math.max(0, x), screenWidth - mTipView.measuredWidth)
         y = Math.max(0, y)
 
         mTipView.setWindowLocation(x, y)
