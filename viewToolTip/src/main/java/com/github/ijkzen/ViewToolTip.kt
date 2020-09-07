@@ -126,7 +126,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
         when (mTipGravity) {
             TipGravity.LEFT -> {
-                return mTargetRect.left > 3 * padding && mTargetRect.top > padding
+                return mTargetRect.left > 6 * padding && mTargetRect.top > padding
             }
             TipGravity.TOP -> {
                 val widthSpec =
@@ -137,7 +137,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
                 return mTargetRect.top > mTipView.measuredHeight
             }
             TipGravity.RIGHT -> {
-                return screenWidth - mTargetRect.right > 2 * padding && mTargetRect.top > padding
+                return screenWidth - mTargetRect.right > 6 * padding && mTargetRect.top > padding
             }
             TipGravity.BOTTOM -> {
                 val widthSpec =
