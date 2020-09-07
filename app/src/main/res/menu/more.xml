@@ -20,4 +20,6 @@
     <item
         android:id="@+id/view_page_fragment"
         android:title="open view page fragment" />
+
+    <item android:id="@+id/view_page_dialogfragmeng" android:title="open view page dialogfragment"/>
 </menu>

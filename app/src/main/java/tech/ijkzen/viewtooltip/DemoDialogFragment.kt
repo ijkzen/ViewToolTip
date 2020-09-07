@@ -17,7 +17,7 @@ import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
 
 
-class DemoDialogFragment : DialogFragment() {
+open class DemoDialogFragment : DialogFragment() {
 
     private lateinit var mBinding: ActivityMainBinding
 

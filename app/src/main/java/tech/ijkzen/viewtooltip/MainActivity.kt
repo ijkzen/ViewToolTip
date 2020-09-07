@@ -143,6 +143,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, FragmentActivity::class.java)
             intent.action = "fragment_view_pager"
             startActivity(intent)
+        } else if (item.itemId == R.id.view_page_dialogfragmeng) {
+            ViewPageDialogFragment().show(
+                supportFragmentManager,
+                ViewPageDialogFragment::class.java.name
+            )
         }
 
         return super.onOptionsItemSelected(item)
