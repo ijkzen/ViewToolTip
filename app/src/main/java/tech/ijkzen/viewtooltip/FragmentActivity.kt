@@ -13,9 +13,16 @@ class FragmentActivity : AppCompatActivity() {
         mBinding = ActivityFragmentBinding.inflate(layoutInflater, null, false)
         setContentView(mBinding.root)
 
+        val action = intent.action
         val transaction = supportFragmentManager.beginTransaction()
-        val fragment = DemoFragment()
-        transaction.add(R.id.content, fragment, DemoFragment::class.java.name)
+
+        if ("fragment" == action) {
+            val fragment = DemoFragment()
+            transaction.add(R.id.content, fragment, DemoFragment::class.java.name)
+        } else {
+            val fragment = ParentFragment()
+            transaction.add(R.id.content, fragment, ParentFragment::class.java.name)
+        }
         transaction.commit()
     }
 }

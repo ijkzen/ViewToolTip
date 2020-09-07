@@ -130,7 +130,13 @@ class MainActivity : AppCompatActivity() {
         if (item.itemId == R.id.dialog) {
             DemoDialogFragment().show(supportFragmentManager, DemoDialogFragment::class.java.name)
         } else if (item.itemId == R.id.fragment) {
-            startActivity(Intent(this, FragmentActivity::class.java))
+            val intent = Intent(this, FragmentActivity::class.java)
+            intent.action = "fragment"
+            startActivity(intent)
+        } else if (item.itemId == R.id.child_fragment) {
+            val intent = Intent(this, FragmentActivity::class.java)
+            intent.action = "child_fragment"
+            startActivity(intent)
         }
 
         return super.onOptionsItemSelected(item)
