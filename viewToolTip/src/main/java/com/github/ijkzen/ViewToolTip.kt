@@ -65,14 +65,10 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
     private fun initTargetRect() {
         if (!mTargetView.getGlobalVisibleRect(Rect())) {
-            val layoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    mTargetView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    mTargetView.getGlobalVisibleRect(mTargetRect)
-                    mTipView.setTargetRect(mTargetRect)
-                }
+            mTargetView.post {
+                mTargetView.getGlobalVisibleRect(mTargetRect)
+                mTipView.setTargetRect(mTargetRect)
             }
-            mTargetView.viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
         } else {
             mTargetView.getGlobalVisibleRect(mTargetRect)
             mTipView.setTargetRect(mTargetRect)
@@ -116,6 +112,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         if (isShowing) {
             return
         }
+        initTargetRect()
         startMaskAnimation()
 
         if (isValidGravity(mTipGravity, isWidthMatchParent)) {

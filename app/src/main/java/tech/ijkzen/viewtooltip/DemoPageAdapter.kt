@@ -8,7 +8,7 @@ class DemoPageAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {
 
     override fun getItemCount(): Int {
-        return 1
+        return 2
     }
 
     override fun createFragment(position: Int): Fragment {
