@@ -32,10 +32,20 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     private val screenWidth = screenWidth(context)
     private val screenHeight = screenHeight(context)
     private val padding = convertDp2Px(10, context)
+    private val mHandler = Handler {
+        val what = it.what
+        if (what == AUTO_HIDE_MESSAGE) {
+            dismiss()
+            return@Handler true
+        } else {
+            return@Handler false
+        }
+    }
 
     companion object {
         const val ANIMATION_DURATION: Long = 500
         const val DEFAULT_DURATION: Long = 15000
+        const val AUTO_HIDE_MESSAGE = 0XFFF8
 
         fun on(context: Context, target: View): ViewToolTip {
             return ViewToolTip(context, target)
@@ -367,6 +377,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     override fun dismiss() {
         super.dismiss()
         endMaskAnimation()
+        removeAutoHideMessage()
     }
 
     override fun customView(contentView: View): ViewToolTip {
@@ -473,8 +484,12 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
     private fun setAutoHide() {
         if (isAutoHide) {
-            Handler().postDelayed({ dismiss() }, mDuration)
+            mHandler.sendEmptyMessageDelayed(AUTO_HIDE_MESSAGE, mDuration)
         }
+    }
+
+    private fun removeAutoHideMessage() {
+        mHandler.removeMessages(AUTO_HIDE_MESSAGE)
     }
 
     override fun notify(tag: String?) {
