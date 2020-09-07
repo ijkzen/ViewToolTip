@@ -48,7 +48,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     fun setTargetRect(targetRect: Rect) {
         targetViewRect = targetRect
-        resetLayout()
     }
 
     fun setWindowLocation(x: Int, y: Int) {
@@ -59,17 +58,11 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     override fun customView(contentView: View) {
         removeView(mContentView)
         mContentView = contentView
-        resetLayout()
         addView(mContentView)
-    }
-
-    fun getContentView():View {
-        return mContentView
     }
 
     override fun gravity(gravity: TipGravity) {
         mGravity = gravity
-        resetLayout()
     }
 
     override fun arrowWidth(width: Int) {
@@ -251,55 +244,5 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     private fun setValidArrowLocation() {
         arrowLocation = (start + end) / 2
-    }
-
-    private fun resetLayout() {
-        if (mContentView.layoutParams != null) {
-            return
-        }
-
-        mContentView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
-        when (mGravity) {
-            TipGravity.LEFT -> {
-                if (mContentView.measuredWidth > targetViewRect.left) {
-                    val layout = LayoutParams(targetViewRect.left, LayoutParams.WRAP_CONTENT)
-                    mContentView.layoutParams = layout
-                } else {
-                    val layout = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-                    mContentView.layoutParams = layout
-                }
-            }
-            TipGravity.TOP -> {
-                if (mContentView.measuredWidth >= screenWidth(context)) {
-                    val layout = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-                    mContentView.layoutParams = layout
-                    layoutParams = layout
-                } else {
-                    val layout = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-                    mContentView.layoutParams = layout
-                }
-            }
-            TipGravity.RIGHT -> {
-                val maxWidth = screenWidth(context) - targetViewRect.right
-                if (mContentView.measuredWidth > maxWidth) {
-                    val layout = LayoutParams(maxWidth, LayoutParams.WRAP_CONTENT)
-                    mContentView.layoutParams = layout
-                } else {
-                    val layout = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-                    mContentView.layoutParams = layout
-                }
-            }
-            else -> {
-                if (mContentView.measuredWidth >= screenWidth(context)) {
-                    val layout = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-                    mContentView.layoutParams = layout
-                    layoutParams = layout
-                } else {
-                    val layout = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-                    mContentView.layoutParams = layout
-                }
-            }
-        }
-        requestLayout()
     }
 }

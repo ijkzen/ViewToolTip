@@ -6,6 +6,8 @@ import android.view.View
 interface ToolTipConfiguration {
     fun customView(contentView: View): ViewToolTip
 
+    fun widthMatchParent(match: Boolean): ViewToolTip
+
     fun gravity(gravity: TipGravity): ViewToolTip
 
     fun arrowWidth(width: Int): ViewToolTip

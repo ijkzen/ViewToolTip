@@ -1,22 +1,12 @@
 package tech.ijkzen.viewtooltip
 
-import android.content.res.TypedArray
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View.TEXT_ALIGNMENT_CENTER
-import android.view.View.combineMeasuredStates
-import android.view.ViewGroup
-import android.widget.PopupWindow
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatTextView
-import com.github.ijkzen.*
+import com.github.ijkzen.TipGravity
+import com.github.ijkzen.ViewToolTip
+import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
-import kotlin.math.log
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,28 +19,112 @@ class MainActivity : AppCompatActivity() {
     )
     private var count = 0
 
+    private lateinit var mBinding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        mBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mBinding.root)
 
-        val text = findViewById<TextView>(R.id.text)
+        val binding1 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding2 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding3 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding4 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding5 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding6 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding7 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding8 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding9 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
 
-        val binding = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        setViewMatchScreen(binding.root)
+        val tip1 = ViewToolTip.on(this, mBinding.text1)
+            .customView(binding1.root)
+            .isAllowHideByClickMask(false)
+            .gravity(TipGravity.BOTTOM)
+            .widthMatchParent(true)
 
-        val tip = ViewToolTip.on(this, text)
-            .customView(binding.root)
+        mBinding.text1.setOnClickListener {
+            tip1.gravity(list[count++ % 4])
+            tip1.show()
+        }
+
+        val tip2 = ViewToolTip.on(this, mBinding.text2)
+            .customView(binding2.root)
+            .isAllowHideByClickMask(false)
+            .gravity(TipGravity.BOTTOM)
+
+        mBinding.text2.setOnClickListener {
+            tip2.gravity(list[count++ % 4])
+            tip2.show()
+        }
+
+        val tip3 = ViewToolTip.on(this, mBinding.text3)
+            .customView(binding3.root)
+            .isAllowHideByClickMask(false)
+            .gravity(TipGravity.BOTTOM)
+
+        mBinding.text3.setOnClickListener {
+            tip3.gravity(list[count++ % 4])
+            tip3.show()
+        }
+
+        val tip4 = ViewToolTip.on(this, mBinding.text4)
+            .customView(binding4.root)
+            .isAllowHideByClickMask(false)
+            .gravity(TipGravity.BOTTOM)
+
+        mBinding.text4.setOnClickListener {
+            tip4.gravity(list[count++ % 4])
+            tip4.show()
+        }
+
+        val tip5 = ViewToolTip.on(this, mBinding.text5)
+            .customView(binding5.root)
             .isAllowHideByClickMask(false)
             .gravity(TipGravity.TOP)
 
-        text.setOnClickListener {
-            tip.gravity(list[count++ % 4])
-            tip.show()
+        mBinding.text5.setOnClickListener {
+            tip5.gravity(list[count++ % 4])
+            tip5.show()
         }
 
-        val styledAttributes: TypedArray =
-            theme.obtainStyledAttributes(intArrayOf(android.R.attr.actionBarSize))
-        val mActionBarSize = styledAttributes.getDimension(0, 0f).toInt()
-        styledAttributes.recycle()
+        val tip6 = ViewToolTip.on(this, mBinding.text6)
+            .customView(binding6.root)
+            .isAllowHideByClickMask(false)
+            .gravity(TipGravity.BOTTOM)
+
+        mBinding.text6.setOnClickListener {
+            tip6.gravity(list[count++ % 4])
+            tip6.show()
+        }
+
+        val tip7 = ViewToolTip.on(this, mBinding.text7)
+            .customView(binding7.root)
+            .isAllowHideByClickMask(false)
+            .gravity(TipGravity.BOTTOM)
+
+        mBinding.text7.setOnClickListener {
+            tip7.gravity(list[count++ % 4])
+            tip7.show()
+        }
+
+        val tip8 = ViewToolTip.on(this, mBinding.text8)
+            .customView(binding8.root)
+            .isAllowHideByClickMask(false)
+            .gravity(TipGravity.BOTTOM)
+
+        mBinding.text8.setOnClickListener {
+            tip8.gravity(list[count++ % 4])
+            tip8.show()
+        }
+
+        val tip9 = ViewToolTip.on(this, mBinding.text9)
+            .customView(binding9.root)
+            .isAllowHideByClickMask(false)
+            .gravity(TipGravity.BOTTOM)
+
+        mBinding.text9.setOnClickListener {
+            tip9.gravity(list[count++ % 4])
+            tip9.show()
+        }
     }
 }
