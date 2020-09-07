@@ -137,6 +137,8 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, FragmentActivity::class.java)
             intent.action = "child_fragment"
             startActivity(intent)
+        } else if (item.itemId == R.id.view_page_activity) {
+            startActivity(Intent(this, ViewPagerActivity::class.java))
         }
 
         return super.onOptionsItemSelected(item)
