@@ -18,12 +18,12 @@ allprojects {
 
 2. Add the dependency
 
-![bage](https://jitpack.io/v/ijkzen/ToggleButton.svg)
+![bage](https://jitpack.io/v/ijkzen/ViewToolTip.svg)
 
 ```groovy
 dependencies {
     ...
-    implementation 'com.github.ijkzen:ToggleButton:<latest_version>'
+    implementation 'com.github.ijkzen:ViewToolTip:<latest_version>'
 }
 ```
 
@@ -31,106 +31,83 @@ dependencies {
 
 0. Example
 
-```xml
-<com.github.ijkzen.ToggleButton
-        android:id="@+id/toggle2"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/toggle"
-        android:layout_marginTop="30dp"
-        android:layout_width="120dp"
-        android:layout_height="70dp"/>
+```kotlin
+val tip1 = ViewToolTip.on(mBinding.text1)
+            .customView(binding1.root)
+            .gravity(TipGravity.BOTTOM)
+
+tip1.show()
 ```
 
 
 
 
 
-1. Use `attributes` on xml
-
-![attrs](./preview/attrs.png)
-
-2. Set `attributes` programmatically
+1. Configure `ViewToolTip` by chaining commands
 
 ```kotlin
-    //  set button color
+interface ToolTipConfiguration {
+    fun customView(contentView: View): ViewToolTip
 
-    fun setCheckedBackgroundColor(@ColorRes color: Int) {
-        mCheckedBackgroundColor = color
-        invalidate()
-    }
+    // For gravity top or bottom, PopupWindow will match screen width.
+    fun widthMatchParent(match: Boolean): ViewToolTip
 
-    fun setUncheckedBackgroundColor(@ColorRes color: Int) {
-        mUncheckedBackgroundColor = color
-        invalidate()
-    }
+    // PopupWindow show around targetView, left, top, right or bottom.
+    fun gravity(gravity: TipGravity): ViewToolTip
 
-    fun setCheckedRoundColor(@ColorRes color: Int) {
-        mCheckedRoundColor = color
-        invalidate()
-    }
+    // width for arrow pointing to the targetView.
+    fun arrowWidth(width: Int): ViewToolTip
 
-    fun setUncheckedRoundColor(@ColorRes color: Int) {
-        mUncheckedRoundColor = color
-        invalidate()
-    }
+    // height for arrow pointing to the targetView.
+    fun arrowHeight(height: Int): ViewToolTip
 
-    fun setDisableCheckedBackgroundColor(@ColorRes color: Int) {
-        mDisableCheckedBackgroundColor = color
-        invalidate()
-    }
+    // color for arrow pointing to the targetView
+    fun arrowColor(color: Int): ViewToolTip
 
-    fun setDisableUncheckBackgroundColor(@ColorRes color: Int) {
-        mDisableUncheckedBackgroundColor = color
-        invalidate()
-    }
+    // set background for popupWindow if not customView
+    fun background(background: GradientDrawable): ViewToolTip
 
-    fun setDisableCheckedRoundColor(@ColorRes color: Int) {
-        mDisableCheckedRoundColor = color
-        invalidate()
-    }
+    // set background color for popupWindow if not customView
+    fun backgroundColor(color: Int): ViewToolTip
 
-    fun setDisableUncheckedRoundColor(@ColorRes color: Int) {
-        mDisableUncheckedRoundColor = color
-        invalidate()
-    }
+    // set background radius for popupWindow if not customView
+    fun backgroundRadius(radius: Int): ViewToolTip
 
-//  set button status
+    // set text for popupWindow if not customView
+    fun text(text: CharSequence): ViewToolTip
 
-    fun setChecked(checked: Boolean) {
-        if (checked != mIsChecked) {
-            mIsChecked = !mIsChecked
-            mIsChanged = true
-            mTouchUpTime = System.currentTimeMillis()
-            invalidate()
-        }
-    }
+    // set text color if not customView
+    fun textColor(color: Int): ViewToolTip
 
-    fun isChecked() = mIsChecked
+    // set text size if not custmView
+    fun textSize(size: Float): ViewToolTip
 
-    fun toggle() {
-        if (isButtonEnabled()) {
-            setChecked(!mIsChecked)
-        }
-    }
+    //  set text alignment if not custmView
+    fun textAlign(align: Int): ViewToolTip
 
-    fun setButtonEnabled(enabled: Boolean) {
-        if (mIsEnabled != enabled) {
-            mIsEnabled = enabled
-            invalidate()
-        }
-    }
+    // show grey background for popupWindow or not
+    fun isShowMaskBackground(show: Boolean): ViewToolTip
 
-    fun isButtonEnabled() = mIsEnabled
+    // dismiss popupWindow when clicking grey background 
+    fun isAllowHideByClickMask(allow: Boolean): ViewToolTip
 
-    fun setDuration(duration: Int) {
-        mDuration = if (duration < DEFAULT_DURATION) {
-            DEFAULT_DURATION
-        } else {
-            duration
-        }
-    }
+    // dimiss popupWindow when clicking popupWindow
+    fun isAllowHideByClickTip(allow: Boolean): ViewToolTip
+
+    // dimiss popupWindow after sometime
+    fun isAutoHide(auto: Boolean): ViewToolTip
+
+    // sometime above
+    fun displayTime(duration: Long): ViewToolTip
+
+    // set tag for popupWindow
+    fun setTag(tag: String): ViewToolTip
+
+    // if tag == mTag, popupWindow will keep showing, otherwise, popupWindow will dismiss
+    fun notify(tag: String?)
+}
 ```
 
 ### More
 
-If you have any questions, please ask me [here](https://github.com/ijkzen/ToggleButton/issues)
+If you have any questions, please ask me [here](https://github.com/ijkzen/ViewToolTip/issues)
