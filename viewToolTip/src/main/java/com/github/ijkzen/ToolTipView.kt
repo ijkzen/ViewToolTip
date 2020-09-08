@@ -78,17 +78,23 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     override fun background(background: GradientDrawable) {
         mBackground = background
-        mContentView.background = mBackground
+        if (mContentView is AppCompatTextView) {
+            mContentView.background = mBackground
+        }
     }
 
     override fun backgroundColor(color: Int) {
         mBackground.setColor(color)
-        mContentView.background = mBackground
+        if (mContentView is AppCompatTextView) {
+            mContentView.background = mBackground
+        }
     }
 
     override fun backgroundRadius(radius: Int) {
         mBackground.cornerRadius = radius.toFloat()
-        mContentView.background = mBackground
+        if (mContentView is AppCompatTextView) {
+            mContentView.background = mBackground
+        }
     }
 
     override fun text(text: CharSequence) {
