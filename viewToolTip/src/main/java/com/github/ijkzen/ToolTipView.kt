@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 
@@ -31,7 +32,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         setWillNotDraw(false)
         setPadding(padding, padding, padding, padding)
         mContentView.setPadding(padding, padding, padding, padding)
-        addView(mContentView)
+        addView(mContentView, LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         mBackground.cornerRadius = convertDp2Px(10, context).toFloat()
         mBackground.setColor(Color.WHITE)
         mContentView.background = mBackground
@@ -56,6 +57,8 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         mContentView = contentView
         addView(mContentView)
     }
+
+    fun contentView() = mContentView
 
     override fun gravity(gravity: TipGravity) {
         mGravity = gravity

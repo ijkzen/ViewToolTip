@@ -3,6 +3,8 @@ package com.github.ijkzen
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 
 fun convertDp2Px(dp: Int, context: Context): Int {
     return dp * context.resources
@@ -33,6 +35,15 @@ fun generateWrapHeightSpec(context: Context): Int {
     return View.MeasureSpec.makeMeasureSpec(screenHeight(context), View.MeasureSpec.AT_MOST)
 }
 
+fun generateMatchWidthLayout(): FrameLayout.LayoutParams{
+    return FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+}
+
+fun isWidthMatchSpace(view: View):Boolean{
+    val layout = view.layoutParams
+    return layout != null && layout.width == ViewGroup.LayoutParams.MATCH_PARENT
+}
+
 fun measureUnspecifiedView(view: View) {
-    view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+    view.measure(generateWrapWidthSpec(view.context), generateWrapHeightSpec(view.context))
 }

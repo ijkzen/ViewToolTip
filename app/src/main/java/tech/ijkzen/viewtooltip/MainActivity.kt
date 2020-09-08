@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val binding6 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
         val binding7 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
         val binding8 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding9 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding9 = DialogShowBinding.inflate(LayoutInflater.from(this), mBinding.root, false)
 
         val tip1 = ViewToolTip.on(mBinding.text1)
             .customView(binding1.root)
@@ -76,7 +76,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         val tip5 = ViewToolTip.on(mBinding.text5)
-            .customView(binding5.root)
+            .text("Are you Ok?")
+//            .customView(binding5.root)
             .gravity(TipGravity.TOP)
 
         mBinding.text5.setOnClickListener {

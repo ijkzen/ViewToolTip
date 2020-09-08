@@ -8,7 +8,10 @@ import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.transition.Fade
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.PopupWindow
 
 open class ViewToolTip(private val context: Context, protected val mTargetView: View) :
@@ -205,25 +208,22 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
     private fun showLeft() {
         mTipView.gravity(TipGravity.RIGHT)
-        measureUnspecifiedView(mTipView)
         val widthSpec: Int
         val heightSpec: Int
-        width = if (mTipView.measuredWidth > mTargetRect.left) {
+        if (isWidthMatchSpace(mTipView.contentView())) {
+            width = mTargetRect.left
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
             widthSpec = View.MeasureSpec.makeMeasureSpec(mTargetRect.left, View.MeasureSpec.EXACTLY)
-            mTargetRect.left
+            heightSpec = generateWrapHeightSpec(context)
         } else {
+            measureUnspecifiedView(mTipView)
+            width = mTipView.measuredWidth
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
             widthSpec =
                 View.MeasureSpec.makeMeasureSpec(mTipView.measuredWidth, View.MeasureSpec.EXACTLY)
-            mTipView.measuredWidth
+            heightSpec = generateWrapHeightSpec(context)
         }
 
-        height = if (mTipView.measuredHeight > screenHeight) {
-            heightSpec = generateMatchHeightSpec(context)
-            ViewGroup.LayoutParams.MATCH_PARENT
-        } else {
-            heightSpec = generateWrapHeightSpec(context)
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        }
         mTipView.measure(widthSpec, heightSpec)
         contentView = mTipView
         val middle = (mTargetRect.top + mTargetRect.bottom) / 2
@@ -233,18 +233,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         var y: Int = (middle - mTipView.measuredHeight * location).toInt()
 
         x = Math.max(0, x)
-        y = Math.min(screenHeight - mTipView.measuredHeight, Math.max(0, y))
-
-        val targetPadding = 3 * padding
-        val topDistance = y - mTargetRect.top
-        if (topDistance < targetPadding) {
-            y -= (targetPadding - topDistance)
-        }
-
-        val bottomDistance = (y + mTipView.measuredHeight) - mTargetRect.bottom
-        if (bottomDistance < targetPadding) {
-            y += (targetPadding - bottomDistance)
-        }
+        y = Math.max(0, y)
 
         showAtLocation(x, y)
     }
@@ -268,7 +257,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         measureUnspecifiedView(mTipView)
         val widthSpec: Int
         val heightSpec: Int
-        width = if (mTipView.measuredWidth > screenWidth) {
+        width = if (mTipView.measuredWidth >= screenWidth) {
             widthSpec = generateMatchWidthSpec(context)
             ViewGroup.LayoutParams.MATCH_PARENT
         } else {
@@ -305,22 +294,22 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         val widthSpec: Int
         val heightSpec: Int
         val maxWidth = screenWidth - mTargetRect.right
-        width = if (mTipView.measuredWidth > maxWidth) {
+
+        if (isWidthMatchSpace(mTipView.contentView())) {
+            width = maxWidth
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
             widthSpec = View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.EXACTLY)
-            maxWidth
+            heightSpec = generateWrapHeightSpec(context)
         } else {
+            measureUnspecifiedView(mTipView)
+            width = mTipView.measuredWidth
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
             widthSpec =
                 View.MeasureSpec.makeMeasureSpec(mTipView.measuredWidth, View.MeasureSpec.EXACTLY)
-            mTipView.measuredWidth
+            heightSpec = generateWrapHeightSpec(context)
         }
 
-        height = if (mTipView.measuredHeight > screenHeight) {
-            heightSpec = generateMatchHeightSpec(context)
-            ViewGroup.LayoutParams.MATCH_PARENT
-        } else {
-            heightSpec = generateWrapHeightSpec(context)
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        }
+        mTipView.layoutParams = generateMatchWidthLayout()
         mTipView.measure(widthSpec, heightSpec)
         contentView = mTipView
         val middle = (mTargetRect.top + mTargetRect.bottom) / 2
@@ -330,18 +319,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         var y: Int = (middle - mTipView.measuredHeight * location).toInt()
 
         x = Math.max(0, x)
-        y = Math.min(screenHeight - mTipView.measuredHeight, Math.max(0, y))
-
-        val targetPadding = 3 * padding
-        val topDistance = y - mTargetRect.top
-        if (topDistance < targetPadding) {
-            y -= (targetPadding - topDistance)
-        }
-
-        val bottomDistance = (y + mTipView.measuredHeight) - mTargetRect.bottom
-        if (bottomDistance < targetPadding) {
-            y += (targetPadding - bottomDistance)
-        }
+        y = Math.max(0, y)
 
         showAtLocation(x, y)
     }
