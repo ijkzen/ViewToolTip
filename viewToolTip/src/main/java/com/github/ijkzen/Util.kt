@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.FrameLayout
 
 fun convertDp2Px(dp: Int, context: Context): Int {
@@ -16,7 +17,9 @@ fun screenWidth(context: Context): Int {
 }
 
 fun screenHeight(context: Context): Int {
-    return context.resources.displayMetrics.heightPixels
+    val dm = DisplayMetrics()
+    (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealMetrics(dm)
+    return dm.heightPixels
 }
 
 fun generateMatchWidthSpec(context: Context): Int {
