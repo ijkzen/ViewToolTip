@@ -138,6 +138,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
             TipGravity.LEFT -> {
                 return mTargetRect.left > 6 * padding
                         && mTargetRect.top > padding
+                        && screenHeight - mTargetRect.bottom > padding
                         && !matchParent
             }
             TipGravity.TOP -> {
@@ -159,6 +160,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
             TipGravity.RIGHT -> {
                 return screenWidth - mTargetRect.right > 6 * padding
                         && mTargetRect.top > padding
+                        && screenHeight - mTargetRect.bottom > padding
                         && !matchParent
             }
             TipGravity.BOTTOM -> {
@@ -229,11 +231,8 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         val middle = (mTargetRect.top + mTargetRect.bottom) / 2
         val location = mTipView.getArrowLocation()
 
-        var x: Int = mTargetRect.left - mTipView.measuredWidth
-        var y: Int = (middle - mTipView.measuredHeight * location).toInt()
-
-        x = Math.max(0, x)
-        y = Math.max(0, y)
+        val x: Int = mTargetRect.left - mTipView.measuredWidth
+        val y: Int = (middle - mTipView.measuredHeight * location).toInt()
 
         showAtLocation(x, y)
     }
@@ -279,11 +278,8 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
         val middle = (mTargetRect.left + mTargetRect.right) / 2
         val location = mTipView.getArrowLocation()
-        var x: Int = (middle - mTipView.measuredWidth * location).toInt()
-        var y: Int = mTargetRect.top - mTipView.measuredHeight
-
-        x = Math.min(Math.max(0, x), screenWidth - mTipView.measuredWidth)
-        y = Math.max(0, y)
+        val x: Int = (middle - mTipView.measuredWidth * location).toInt()
+        val y: Int = mTargetRect.top - mTipView.measuredHeight
 
         showAtLocation(x, y)
     }
@@ -315,11 +311,8 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         val middle = (mTargetRect.top + mTargetRect.bottom) / 2
         val location = mTipView.getArrowLocation()
 
-        var x: Int = mTargetRect.right
-        var y: Int = (middle - mTipView.measuredHeight * location).toInt()
-
-        x = Math.max(0, x)
-        y = Math.max(0, y)
+        val x: Int = mTargetRect.right
+        val y: Int = (middle - mTipView.measuredHeight * location).toInt()
 
         showAtLocation(x, y)
     }
@@ -361,19 +354,33 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
         val middle = (mTargetRect.left + mTargetRect.right) / 2
         val location = mTipView.getArrowLocation()
-        var x: Int = (middle - mTipView.measuredWidth * location).toInt()
-        var y: Int = mTargetRect.bottom
+        val x: Int = (middle - mTipView.measuredWidth * location).toInt()
+        val y: Int = mTargetRect.bottom
 
-        x = Math.min(Math.max(0, x), screenWidth - mTipView.measuredWidth)
-        y = Math.max(0, y)
         showAtLocation(x, y)
     }
 
     private fun showAtLocation(x: Int, y: Int) {
-        val finalX = if (x < 0) 0 else x
-        val finalY = if (y < 0) 0 else y
+        val finalX = resetX(x)
+        val finalY = resetY(y)
         mTipView.setWindowLocation(finalX, finalY)
         showAtLocation(mTargetView, Gravity.NO_GRAVITY, finalX, finalY)
+    }
+
+    private fun resetX(x: Int): Int {
+        var result = Math.max(0, x)
+        if (result + mTipView.measuredWidth > screenWidth) {
+            result = screenWidth - mTipView.measuredWidth
+        }
+        return result
+    }
+
+    private fun resetY(y: Int): Int {
+        var result = Math.max(0, y)
+        if (result + mTipView.measuredHeight > screenHeight) {
+            result = screenHeight - mTipView.measuredHeight
+        }
+        return result
     }
 
     private fun showGravity(tipGravity: TipGravity) {

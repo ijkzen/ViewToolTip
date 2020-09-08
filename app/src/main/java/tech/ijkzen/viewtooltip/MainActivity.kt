@@ -76,9 +76,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         val tip5 = ViewToolTip.on(mBinding.text5)
-            .text("Are you Ok?")
-//            .customView(binding5.root)
-            .gravity(TipGravity.TOP)
+//            .text("Are you Ok?")
+            .customView(binding5.root)
+            .gravity(TipGravity.LEFT)
 
         mBinding.text5.setOnClickListener {
             tip5.gravity(list[count++ % 4])
