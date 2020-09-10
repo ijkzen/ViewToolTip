@@ -1,7 +1,7 @@
 ![bage](https://jitpack.io/v/ijkzen/ViewToolTip.svg) ![week_download](https://jitpack.io/v/ijkzen/ViewToolTip/week.svg) ![month_download](https://jitpack.io/v/ijkzen/ViewToolTip/month.svg)
 ### Preview
 
-<div align=center><img style="height:400px" src="./preview/preview.gif"/></div>
+<img src='preview/preview.gif' height=800px/>
 
 
 
