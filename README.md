@@ -3,6 +3,10 @@
 
 <div align=center><img style="height:400px" src="./preview/preview.gif"/></div>
 
+
+
+[Demo Download](./preview/ViewToolTip-demo.apk)
+
 ### Usage
 
 1. Add it in your **root**  `build.gradle` at the end of repositories
