@@ -8,6 +8,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.github.ijkzen.TipGravity
 import com.github.ijkzen.ViewToolTip
+import com.github.ijkzen.convertDp2Px
 import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
 
@@ -78,6 +79,7 @@ class MainActivity : AppCompatActivity() {
         val tip5 = ViewToolTip.on(mBinding.text5)
 //            .text("Are you Ok?")
             .customView(binding5.root)
+            .arrowHeight(convertDp2Px(5, this))
             .gravity(TipGravity.LEFT)
 
         mBinding.text5.setOnClickListener {

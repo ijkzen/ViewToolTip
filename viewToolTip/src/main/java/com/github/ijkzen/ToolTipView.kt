@@ -146,7 +146,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         val arrowMiddle = arrowLocation
         a.x = padding.toFloat()
         a.y = arrowMiddle - arrowWidth / 2.toFloat()
-        b.x = 0F
+        b.x = padding.toFloat() - arrowHeight
         b.y = arrowMiddle.toFloat()
         c.x = padding.toFloat()
         c.y = arrowMiddle + arrowWidth / 2.toFloat()
