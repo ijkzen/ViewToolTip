@@ -108,7 +108,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         mMaskLayoutParam.token = mTargetView.windowToken
 
         mMaskView = View(context)
-        mMaskView.fitsSystemWindows = false
+        mMaskView.fitsSystemWindows = true
     }
 
     fun show() {
