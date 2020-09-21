@@ -166,7 +166,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         a.y = padding.toFloat()
         b.x = arrowMiddle.toFloat()
         b.y = (padding - arrowHeight).toFloat()
-        c.x = arrowMiddle + arrowHeight / 2.toFloat()
+        c.x = arrowMiddle + arrowWidth / 2.toFloat()
         c.y = padding.toFloat()
 
         drawBubble(canvas, a, b, c)
