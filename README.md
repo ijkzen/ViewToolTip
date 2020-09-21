@@ -1,4 +1,4 @@
-![bage](https://jitpack.io/v/ijkzen/ViewToolTip.svg) ![week_download](https://jitpack.io/v/ijkzen/ViewToolTip/week.svg) ![month_download](https://jitpack.io/v/ijkzen/ViewToolTip/month.svg)
+![bage](https://jitpack.io/v/ijkzen/ViewToolTip.svg) ![week_download](https://jitpack.io/v/ijkzen/ViewToolTip/week.svg) ![month_download](https://jitpack.io/v/ijkzen/ViewToolTip/month.svg) ![build status](https://github.com/ijkzen/ViewToolTip/workflows/ViewToolTip/badge.svg)
 ### Preview
 
 <img src='preview/preview.gif' height=800px/>
