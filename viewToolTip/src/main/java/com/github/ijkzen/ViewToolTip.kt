@@ -46,7 +46,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     }
 
     companion object {
-        const val ANIMATION_DURATION: Long = 500
+        const val ANIMATION_DURATION: Long = 300
         const val DEFAULT_DURATION: Long = 15000
         const val AUTO_HIDE_MESSAGE = 0XFFF8
 
