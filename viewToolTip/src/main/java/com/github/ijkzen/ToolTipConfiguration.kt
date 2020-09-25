@@ -2,8 +2,12 @@ package com.github.ijkzen
 
 import android.graphics.drawable.GradientDrawable
 import android.view.View
+import androidx.lifecycle.LifecycleOwner
 
 interface ToolTipConfiguration {
+
+    fun observeLifecycle(owner: LifecycleOwner): ViewToolTip
+
     fun customView(contentView: View): ViewToolTip
 
     fun widthMatchParent(match: Boolean): ViewToolTip

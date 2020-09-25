@@ -13,9 +13,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.PopupWindow
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 
 open class ViewToolTip(private val context: Context, protected val mTargetView: View) :
-    PopupWindow(context), ToolTipConfiguration {
+    PopupWindow(context), ToolTipConfiguration, LifecycleObserver {
     private lateinit var mWindowManager: WindowManager
     private var mTipView: ToolTipView = ToolTipView(context)
     private val mTargetRect = Rect()
@@ -428,10 +432,16 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         mMaskValueAnimator.start()
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     override fun dismiss() {
         super.dismiss()
         endMaskAnimation()
         removeAutoHideMessage()
+    }
+
+    override fun observeLifecycle(owner: LifecycleOwner): ViewToolTip {
+        owner.lifecycle.addObserver(this)
+        return this
     }
 
     override fun customView(contentView: View): ViewToolTip {
