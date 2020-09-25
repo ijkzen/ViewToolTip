@@ -112,6 +112,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         mMaskLayoutParam.format = PixelFormat.TRANSLUCENT
         mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
         mMaskLayoutParam.token = mTargetView.windowToken
+        mMaskLayoutParam.flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     }
 
     override fun show() {
