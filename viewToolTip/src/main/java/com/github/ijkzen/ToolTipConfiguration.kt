@@ -47,4 +47,8 @@ interface ToolTipConfiguration {
     fun setTag(tag: String): ToolTipConfiguration
 
     fun notify(tag: String?)
+
+    fun show()
+
+    fun dismiss()
 }

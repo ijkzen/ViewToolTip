@@ -114,7 +114,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         mMaskLayoutParam.token = mTargetView.windowToken
     }
 
-    fun show() {
+    override fun show() {
         if (isShowing) {
             return
         }
