@@ -6,45 +6,45 @@ import androidx.lifecycle.LifecycleOwner
 
 interface ToolTipConfiguration {
 
-    fun observeLifecycle(owner: LifecycleOwner): ViewToolTip
+    fun observeLifecycle(owner: LifecycleOwner): ToolTipConfiguration
 
-    fun customView(contentView: View): ViewToolTip
+    fun customView(contentView: View): ToolTipConfiguration
 
-    fun widthMatchParent(match: Boolean): ViewToolTip
+    fun widthMatchParent(match: Boolean): ToolTipConfiguration
 
-    fun gravity(gravity: TipGravity): ViewToolTip
+    fun gravity(gravity: TipGravity): ToolTipConfiguration
 
-    fun arrowWidth(width: Int): ViewToolTip
+    fun arrowWidth(width: Int): ToolTipConfiguration
 
-    fun arrowHeight(height: Int): ViewToolTip
+    fun arrowHeight(height: Int): ToolTipConfiguration
 
-    fun arrowColor(color: Int): ViewToolTip
+    fun arrowColor(color: Int): ToolTipConfiguration
 
-    fun background(background: GradientDrawable): ViewToolTip
+    fun background(background: GradientDrawable): ToolTipConfiguration
 
-    fun backgroundColor(color: Int): ViewToolTip
+    fun backgroundColor(color: Int): ToolTipConfiguration
 
-    fun backgroundRadius(radius: Int): ViewToolTip
+    fun backgroundRadius(radius: Int): ToolTipConfiguration
 
-    fun text(text: CharSequence): ViewToolTip
+    fun text(text: CharSequence): ToolTipConfiguration
 
-    fun textColor(color: Int): ViewToolTip
+    fun textColor(color: Int): ToolTipConfiguration
 
-    fun textSize(size: Float): ViewToolTip
+    fun textSize(size: Float): ToolTipConfiguration
 
-    fun textAlign(align: Int): ViewToolTip
+    fun textAlign(align: Int): ToolTipConfiguration
 
-    fun isShowMaskBackground(show: Boolean): ViewToolTip
+    fun isShowMaskBackground(show: Boolean): ToolTipConfiguration
 
-    fun isAllowHideByClickMask(allow: Boolean): ViewToolTip
+    fun isAllowHideByClickMask(allow: Boolean): ToolTipConfiguration
 
-    fun isAllowHideByClickTip(allow: Boolean): ViewToolTip
+    fun isAllowHideByClickTip(allow: Boolean): ToolTipConfiguration
 
-    fun isAutoHide(auto: Boolean): ViewToolTip
+    fun isAutoHide(auto: Boolean): ToolTipConfiguration
 
-    fun displayTime(duration: Long): ViewToolTip
+    fun displayTime(duration: Long): ToolTipConfiguration
 
-    fun setTag(tag: String): ViewToolTip
+    fun setTag(tag: String): ToolTipConfiguration
 
     fun notify(tag: String?)
 }
