@@ -23,7 +23,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     private lateinit var mWindowManager: WindowManager
     private var mTipView: ToolTipView = ToolTipView(context)
     private val mTargetRect = Rect()
-    private lateinit var mMaskView: View
+    private var mMaskView: View
     private val mMaskValueAnimator = ValueAnimator.ofInt(0, 0X4D)
     private lateinit var mMaskLayoutParam: WindowManager.LayoutParams
 
@@ -68,6 +68,8 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
             exitTransition = Fade()
         }
         initValueAnimator()
+        mMaskView = View(context)
+        mMaskView.fitsSystemWindows = true
     }
 
     private fun initTargetRect() {
@@ -110,9 +112,6 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         mMaskLayoutParam.format = PixelFormat.TRANSLUCENT
         mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
         mMaskLayoutParam.token = mTargetView.windowToken
-
-        mMaskView = View(context)
-        mMaskView.fitsSystemWindows = true
     }
 
     fun show() {
