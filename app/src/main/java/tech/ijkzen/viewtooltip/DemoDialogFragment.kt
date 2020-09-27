@@ -1,15 +1,11 @@
 package tech.ijkzen.viewtooltip
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
-import android.graphics.PixelFormat
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.DialogFragment
 import com.github.ijkzen.TipGravity
 import com.github.ijkzen.ViewToolTip

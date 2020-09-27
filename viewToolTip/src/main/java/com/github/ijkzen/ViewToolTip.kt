@@ -459,6 +459,10 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         return this
     }
 
+    override fun transition(type: TransitionType): ToolTipConfiguration {
+        TODO("Not yet implemented")
+    }
+
     override fun arrowWidth(width: Int): ViewToolTip {
         mTipView.arrowWidth(width)
         return this
