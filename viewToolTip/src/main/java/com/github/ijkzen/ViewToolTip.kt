@@ -1,45 +1,35 @@
 package com.github.ijkzen
 
-import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
-import android.transition.Transition
-import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
+import com.github.ijkzen.view.MaskView
+import com.github.ijkzen.view.ToolTipView
 
 open class ViewToolTip(private val context: Context, protected val mTargetView: View) :
     ToolTipConfiguration, LifecycleObserver {
-    private lateinit var mWindowManager: WindowManager
-    private var mTipView: ToolTipView = ToolTipView(context)
-    private val mTargetRect = Rect()
-    private var mMaskView: View = View(context)
-    private val mMaskValueAnimator = ValueAnimator.ofInt(0, 0X4D)
-    private var mTipViewLayoutParam = WindowManager.LayoutParams()
-    private var mMaskLayoutParam = WindowManager.LayoutParams()
+    private var mTipView = ToolTipView(context)
+
+    @SuppressLint("NewApi")
+    private var mMaskView = MaskView(context)
+    private var mTargetRect = Rect()
 
     private var mTipGravity = TipGravity.AUTO
-    private var mTransitionType = AnimationType.FADE
+    private var mIsWidthMatchParent = false
+
     private var isShowing = false
-    private var isShowMaskBackground = true
     private var isAllowHideByClickMask = true
     private var isAllowHideByClickTip = true
     private var isAutoHide = true
-    private var isWidthMatchParent = false
     private var mDuration = DEFAULT_DURATION
     private var mTag: String? = null
-
-    private var enterTransition: Transition? = null
-    private var exitTransition: Transition? = null
 
     private val screenWidth = screenWidth(context)
     private val screenHeight = screenHeight(context)
@@ -55,34 +45,12 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     }
 
     companion object {
-        const val ANIMATION_DURATION: Long = 300
         const val DEFAULT_DURATION: Long = 15000
         const val AUTO_HIDE_MESSAGE = 0XFFF8
 
         fun on(target: View): ViewToolTip {
             return ViewToolTip(target.context, target)
         }
-    }
-
-    init {
-        initValueAnimator()
-        mMaskView.fitsSystemWindows = false
-        mMaskLayoutParam.width = WindowManager.LayoutParams.MATCH_PARENT
-        mMaskLayoutParam.height = WindowManager.LayoutParams.MATCH_PARENT
-        mMaskLayoutParam.format = PixelFormat.TRANSLUCENT
-        mMaskLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
-        mMaskLayoutParam.flags = getFlags()
-
-        mTipView.fitsSystemWindows = false
-        mTipViewLayoutParam.format = PixelFormat.TRANSLUCENT
-        mTipViewLayoutParam.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
-        mTipViewLayoutParam.flags = getFlags()
-        mTipViewLayoutParam.gravity = Gravity.TOP or Gravity.LEFT
-    }
-
-    private fun getFlags(): Int {
-        return WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
     }
 
     private fun initTargetRect() {
@@ -97,39 +65,16 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         }
     }
 
-    private fun initValueAnimator() {
-        val valueUpdateListener = ValueAnimator.AnimatorUpdateListener {
-            if (isShowing) {
-                if (isMaskAttach2Window()) {
-                    mMaskView.setBackgroundColor(Color.argb(it.animatedValue as Int, 41, 36, 33))
-                }
-            } else {
-                if (isMaskAttach2Window()) {
-                    val value = it.animatedValue as Int
-                    mMaskView.setBackgroundColor(Color.argb(0X4D - value, 41, 36, 33))
-                    if (value == 0X4D) {
-                        mWindowManager.removeView(mMaskView)
-                    }
-                }
-            }
-        }
-        mMaskValueAnimator.duration = ANIMATION_DURATION
-        mMaskValueAnimator.addUpdateListener(valueUpdateListener)
-    }
-
-    private fun initWindowManager() {
-        mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    }
-
+    @SuppressLint("NewApi")
     override fun show() {
         if (isShowing) {
             return
         }
+        isShowing = true
         initTargetRect()
-        initWindowManager()
-//        startMaskAnimation()
 
-        if (isValidGravity(mTipGravity, isWidthMatchParent)) {
+        mMaskView.show()
+        if (isValidGravity(mTipGravity, mIsWidthMatchParent)) {
             showGravity(mTipGravity)
         } else {
             showAuto()
@@ -157,8 +102,8 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
                     val widthSpec = generateMatchWidthSpec(context)
                     val heightSpec = generateWrapHeightSpec(context)
                     mTipView.measure(widthSpec, heightSpec)
-                    isWidthMatchParent = mTargetRect.top > mTipView.measuredHeight
-                    isWidthMatchParent
+                    mIsWidthMatchParent = mTargetRect.top > mTipView.measuredHeight
+                    mIsWidthMatchParent
                 } else {
                     measureUnspecifiedView(mTipView)
                     if (mTargetRect.top > mTipView.measuredHeight) {
@@ -181,8 +126,9 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
                     val heightSpec =
                         generateWrapHeightSpec(context)
                     mTipView.measure(widthSpec, heightSpec)
-                    isWidthMatchParent = screenHeight - mTargetRect.bottom > mTipView.measuredHeight
-                    isWidthMatchParent
+                    mIsWidthMatchParent =
+                        screenHeight - mTargetRect.bottom > mTipView.measuredHeight
+                    mIsWidthMatchParent
                 } else {
                     measureUnspecifiedView(mTipView)
                     if (screenHeight - mTargetRect.bottom > mTipView.measuredHeight) {
@@ -199,15 +145,15 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     }
 
     private fun getValidGravity(): TipGravity {
-        if (isValidGravity(TipGravity.LEFT, isWidthMatchParent)) {
+        if (isValidGravity(TipGravity.LEFT, mIsWidthMatchParent)) {
             return TipGravity.LEFT
         }
 
-        if (isValidGravity(TipGravity.TOP, isWidthMatchParent)) {
+        if (isValidGravity(TipGravity.TOP, mIsWidthMatchParent)) {
             return TipGravity.TOP
         }
 
-        if (isValidGravity(TipGravity.RIGHT, isWidthMatchParent)) {
+        if (isValidGravity(TipGravity.RIGHT, mIsWidthMatchParent)) {
             return TipGravity.RIGHT
         }
 
@@ -219,228 +165,18 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         showGravity(gravity)
     }
 
-    private fun showLeft() {
-        mTipView.gravity(TipGravity.RIGHT)
-        val widthSpec: Int
-        val heightSpec: Int
-        if (isWidthMatchSpace(mTipView.contentView())) {
-            mTipViewLayoutParam.width = mTargetRect.left
-            mTipViewLayoutParam.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            widthSpec = View.MeasureSpec.makeMeasureSpec(mTargetRect.left, View.MeasureSpec.EXACTLY)
-            heightSpec = generateWrapHeightSpec(context)
-        } else {
-            measureUnspecifiedView(mTipView)
-            mTipViewLayoutParam.width = mTipView.measuredWidth
-            mTipViewLayoutParam.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            widthSpec =
-                View.MeasureSpec.makeMeasureSpec(mTipView.measuredWidth, View.MeasureSpec.EXACTLY)
-            heightSpec = generateWrapHeightSpec(context)
-        }
-
-        mTipView.measure(widthSpec, heightSpec)
-        val middle = (mTargetRect.top + mTargetRect.bottom) / 2
-        val location = mTipView.getArrowLocation()
-
-        val x: Int = mTargetRect.left - mTipView.measuredWidth
-        val y: Int = (middle - mTipView.measuredHeight * location).toInt()
-
-        showAtLocation(x, y)
-    }
-
-    private fun showTop() {
-        mTipView.gravity(TipGravity.BOTTOM)
-        if (isWidthMatchParent) {
-            mTipViewLayoutParam.width = ViewGroup.LayoutParams.MATCH_PARENT
-            mTipViewLayoutParam.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            val widthSpec = generateMatchWidthSpec(context)
-            val heightSpec =
-                View.MeasureSpec.makeMeasureSpec(mTargetRect.top, View.MeasureSpec.AT_MOST)
-            mTipView.measure(widthSpec, heightSpec)
-            val x = 0
-            val y = mTargetRect.top - mTipView.measuredHeight
-            showAtLocation(x, y)
-            return
-        }
-
-        measureUnspecifiedView(mTipView)
-        val widthSpec: Int
-        val heightSpec: Int
-        mTipViewLayoutParam.width = if (mTipView.measuredWidth >= screenWidth) {
-            widthSpec = generateMatchWidthSpec(context)
-            ViewGroup.LayoutParams.MATCH_PARENT
-        } else {
-            widthSpec = generateWrapWidthSpec(context)
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        }
-
-        mTipViewLayoutParam.height = if (mTipView.measuredHeight > screenHeight) {
-            heightSpec = generateMatchHeightSpec(context)
-            ViewGroup.LayoutParams.MATCH_PARENT
-        } else {
-            heightSpec = generateWrapHeightSpec(context)
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        }
-
-        mTipView.measure(widthSpec, heightSpec)
-        val middle = (mTargetRect.left + mTargetRect.right) / 2
-        val location = mTipView.getArrowLocation()
-        val x: Int = (middle - mTipView.measuredWidth * location).toInt()
-        val y: Int = mTargetRect.top - mTipView.measuredHeight
-
-        showAtLocation(x, y)
-    }
-
-    private fun showRight() {
-        mTipView.gravity(TipGravity.LEFT)
-        measureUnspecifiedView(mTipView)
-        val widthSpec: Int
-        val heightSpec: Int
-        val maxWidth = screenWidth - mTargetRect.right
-
-        if (isWidthMatchSpace(mTipView.contentView())) {
-            mTipViewLayoutParam.width = maxWidth
-            mTipViewLayoutParam.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            widthSpec = View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.EXACTLY)
-            heightSpec = generateWrapHeightSpec(context)
-        } else {
-            measureUnspecifiedView(mTipView)
-            mTipViewLayoutParam.width = mTipView.measuredWidth
-            mTipViewLayoutParam.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            widthSpec =
-                View.MeasureSpec.makeMeasureSpec(mTipView.measuredWidth, View.MeasureSpec.EXACTLY)
-            heightSpec = generateWrapHeightSpec(context)
-        }
-
-        mTipView.layoutParams = generateMatchWidthLayout()
-        mTipView.measure(widthSpec, heightSpec)
-        val middle = (mTargetRect.top + mTargetRect.bottom) / 2
-        val location = mTipView.getArrowLocation()
-
-        val x: Int = mTargetRect.right
-        val y: Int = (middle - mTipView.measuredHeight * location).toInt()
-
-        showAtLocation(x, y)
-    }
-
-    private fun showBottom() {
-        mTipView.gravity(TipGravity.TOP)
-        if (isWidthMatchParent) {
-            mTipViewLayoutParam.width = ViewGroup.LayoutParams.MATCH_PARENT
-            mTipViewLayoutParam.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            val x = 0
-            val y = mTargetRect.bottom
-            showAtLocation(x, y)
-            return
-        }
-
-        measureUnspecifiedView(mTipView)
-        val widthSpec: Int
-        val heightSpec: Int
-        mTipViewLayoutParam.width = if (mTipView.measuredWidth > screenWidth) {
-            widthSpec = generateMatchWidthSpec(context)
-            ViewGroup.LayoutParams.MATCH_PARENT
-        } else {
-            widthSpec = generateWrapWidthSpec(context)
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        }
-
-        mTipViewLayoutParam.height = if (mTipView.measuredHeight > screenHeight) {
-            heightSpec = generateMatchHeightSpec(context)
-            ViewGroup.LayoutParams.MATCH_PARENT
-        } else {
-            heightSpec = generateWrapHeightSpec(context)
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        }
-
-        mTipView.measure(widthSpec, heightSpec)
-        val middle = (mTargetRect.left + mTargetRect.right) / 2
-        val location = mTipView.getArrowLocation()
-        val x: Int = (middle - mTipView.measuredWidth * location).toInt()
-        val y: Int = mTargetRect.bottom
-
-        showAtLocation(x, y)
-    }
-
-    private fun showAtLocation(x: Int, y: Int) {
-        val finalX = resetX(x)
-        val finalY = resetY(y)
-        mTipView.setWindowLocation(finalX, finalY)
-        mTipViewLayoutParam.x = finalX
-        mTipViewLayoutParam.y = finalY
-        mWindowManager.addView(mTipView, mTipViewLayoutParam)
-        mTipView.requestEnterTransition(enterTransition)
-    }
-
-    private fun resetX(x: Int): Int {
-        var result = Math.max(0, x)
-        if (result + mTipView.measuredWidth > screenWidth) {
-            result = screenWidth - mTipView.measuredWidth
-        }
-        return result
-    }
-
-    private fun resetY(y: Int): Int {
-        var result = Math.max(0, y)
-        if (result + mTipView.measuredHeight > screenHeight) {
-            result = screenHeight - mTipView.measuredHeight
-        }
-        return result
-    }
-
     private fun showGravity(tipGravity: TipGravity) {
-        when (tipGravity) {
-            TipGravity.LEFT -> {
-                showLeft()
-            }
-            TipGravity.TOP -> {
-                showTop()
-            }
-            TipGravity.RIGHT -> {
-                showRight()
-            }
-            TipGravity.BOTTOM -> {
-                showBottom()
-            }
-            else -> {
-                showAuto()
-            }
-        }
+        mTipView.gravity(tipGravity)
+        mTipView.show()
     }
 
-    private fun isMaskAttach2Window(): Boolean {
-        return mMaskView.isAttachedToWindow
-    }
-
-    private fun startMaskAnimation() {
-        if (!isShowMaskBackground) {
-            return
-        }
-
-        if (isMaskAttach2Window()) {
-            mWindowManager.removeView(mMaskView)
-        }
-
-        mWindowManager.addView(mMaskView, mMaskLayoutParam)
-        mMaskValueAnimator.start()
-    }
-
-    private fun endMaskAnimation() {
-        if (!isShowMaskBackground) {
-            return
-        }
-        mMaskValueAnimator.start()
-    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     override fun dismiss() {
-        dismissTipView()
-        endMaskAnimation()
+        isShowing = false
+        mTipView.dismiss()
+        mMaskView.dismiss()
         removeAutoHideMessage()
-    }
-
-    private fun dismissTipView() {
-        mTipView.requestExitTransition(exitTransition)
-        mWindowManager.removeView(mTipView)
     }
 
     override fun observeLifecycle(owner: LifecycleOwner): ViewToolTip {
@@ -454,7 +190,8 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     }
 
     override fun widthMatchParent(match: Boolean): ViewToolTip {
-        isWidthMatchParent = match
+        mIsWidthMatchParent = match
+        mTipView.isWidthMatchParent(match)
         return this
     }
 
@@ -464,7 +201,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     }
 
     override fun animation(type: AnimationType): ToolTipConfiguration {
-        mTransitionType = type
+        mTipView.animationType(type)
         return this
     }
 
@@ -519,7 +256,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     }
 
     override fun isShowMaskBackground(show: Boolean): ViewToolTip {
-        isShowMaskBackground = show
+        mMaskView.isShowBackground(show)
         return this
     }
 
