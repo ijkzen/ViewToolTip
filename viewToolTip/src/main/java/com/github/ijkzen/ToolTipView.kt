@@ -1,9 +1,11 @@
 package com.github.ijkzen
 
+import android.animation.Animator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
+import android.transition.Transition
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -26,13 +28,17 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     private var start = 0
     private var end = 0
 
+    private lateinit var animator: Animator
+
     constructor(context: Context) : super(context)
 
     init {
-        setWillNotDraw(false)
         setPadding(padding, padding, padding, padding)
         mContentView.setPadding(padding, padding, padding, padding)
-        addView(mContentView, LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        addView(
+            mContentView,
+            LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        )
         mBackground.cornerRadius = convertDp2Px(10, context).toFloat()
         mBackground.setColor(Color.WHITE)
         mContentView.background = mBackground
@@ -113,100 +119,81 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         (mContentView as? AppCompatTextView)?.textAlignment = align
     }
 
+    override fun animationType(animationType: AnimationType) {
+        TODO("Not yet implemented")
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         drawBubble(canvas)
     }
 
     private fun drawBubble(canvas: Canvas?) {
-        when (mGravity) {
+        val list = getBubblePoints()
+        list?.let { drawBubble(canvas, it[0], it[1], it[2]) }
+    }
+
+    private fun getBubblePoints(): List<PointF>? {
+        updateArrowLocation()
+        return when (mGravity) {
             TipGravity.LEFT -> {
-                drawLeftBubble(canvas)
+                val a = PointF()
+                val b = PointF()
+                val c = PointF()
+
+                val arrowMiddle = arrowLocation
+                a.x = padding.toFloat()
+                a.y = arrowMiddle - arrowWidth / 2.toFloat()
+                b.x = padding.toFloat() - arrowHeight
+                b.y = arrowMiddle.toFloat()
+                c.x = padding.toFloat()
+                c.y = arrowMiddle + arrowWidth / 2.toFloat()
+                listOf(a, b, c)
             }
             TipGravity.TOP -> {
-                drawTopBubble(canvas)
+                val a = PointF()
+                val b = PointF()
+                val c = PointF()
+
+                val arrowMiddle = arrowLocation
+                a.x = arrowMiddle - arrowWidth / 2.toFloat()
+                a.y = padding.toFloat()
+                b.x = arrowMiddle.toFloat()
+                b.y = (padding - arrowHeight).toFloat()
+                c.x = arrowMiddle + arrowWidth / 2.toFloat()
+                c.y = padding.toFloat()
+                listOf(a, b, c)
             }
             TipGravity.RIGHT -> {
-                drawRightBubble(canvas)
+                val a = PointF()
+                val b = PointF()
+                val c = PointF()
+
+                val arrowMiddle = arrowLocation
+                a.x = (width - padding).toFloat()
+                a.y = arrowMiddle - arrowWidth / 2.toFloat()
+                b.x = (width - padding + arrowHeight).toFloat()
+                b.y = arrowMiddle.toFloat()
+                c.x = a.x
+                c.y = arrowMiddle + arrowWidth / 2.toFloat()
+                listOf(a, b, c)
             }
             TipGravity.BOTTOM -> {
-                drawBottomBubble(canvas)
+                val a = PointF()
+                val b = PointF()
+                val c = PointF()
+
+                val arrowMiddle = arrowLocation.toFloat()
+                a.x = arrowMiddle - arrowWidth / 2
+                a.y = (height - padding).toFloat()
+                b.x = arrowMiddle
+                b.y = (height - padding + arrowHeight).toFloat()
+                c.x = arrowMiddle + arrowWidth / 2
+                c.y = a.y
+                listOf(a, b, c)
             }
-            else -> {
-            }
+            else -> null
         }
-    }
-
-    private fun drawLeftBubble(canvas: Canvas?) {
-        updateArrowLocation()
-        val a = PointF()
-        val b = PointF()
-        val c = PointF()
-
-        val arrowMiddle = arrowLocation
-        a.x = padding.toFloat()
-        a.y = arrowMiddle - arrowWidth / 2.toFloat()
-        b.x = padding.toFloat() - arrowHeight
-        b.y = arrowMiddle.toFloat()
-        c.x = padding.toFloat()
-        c.y = arrowMiddle + arrowWidth / 2.toFloat()
-
-        drawBubble(canvas, a, b, c)
-    }
-
-    private fun drawTopBubble(canvas: Canvas?) {
-        updateArrowLocation()
-
-        val a = PointF()
-        val b = PointF()
-        val c = PointF()
-
-        val arrowMiddle = arrowLocation
-        a.x = arrowMiddle - arrowWidth / 2.toFloat()
-        a.y = padding.toFloat()
-        b.x = arrowMiddle.toFloat()
-        b.y = (padding - arrowHeight).toFloat()
-        c.x = arrowMiddle + arrowWidth / 2.toFloat()
-        c.y = padding.toFloat()
-
-        drawBubble(canvas, a, b, c)
-    }
-
-    private fun drawRightBubble(canvas: Canvas?) {
-        updateArrowLocation()
-
-        val a = PointF()
-        val b = PointF()
-        val c = PointF()
-
-        val arrowMiddle = arrowLocation
-        a.x = (width - padding).toFloat()
-        a.y = arrowMiddle - arrowWidth / 2.toFloat()
-        b.x = (width - padding + arrowHeight).toFloat()
-        b.y = arrowMiddle.toFloat()
-        c.x = a.x
-        c.y = arrowMiddle + arrowWidth / 2.toFloat()
-
-        drawBubble(canvas, a, b, c)
-    }
-
-    private fun drawBottomBubble(canvas: Canvas?) {
-        updateArrowLocation()
-
-        val a = PointF()
-        val b = PointF()
-        val c = PointF()
-
-        val arrowMiddle = arrowLocation.toFloat()
-        a.x = arrowMiddle - arrowWidth / 2
-        a.y = (height - padding).toFloat()
-        b.x = arrowMiddle
-        b.y = (height - padding + arrowHeight).toFloat()
-        c.x = arrowMiddle + arrowWidth / 2
-        c.y = a.y
-
-
-        drawBubble(canvas, a, b, c)
     }
 
     private fun drawBubble(canvas: Canvas?, a: PointF, b: PointF, c: PointF) {
@@ -245,6 +232,14 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                 end = Math.min(targetViewRect.bottom, windowRect.bottom) - mWindowY
             }
         }
+    }
+
+    fun requestEnterTransition(transition: Transition?) {
+
+    }
+
+    fun requestExitTransition(transition: Transition?) {
+
     }
 
     private fun setValidArrowLocation() {

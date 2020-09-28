@@ -14,7 +14,7 @@ interface ToolTipConfiguration {
 
     fun gravity(gravity: TipGravity): ToolTipConfiguration
 
-    fun transition(type: TransitionType): ToolTipConfiguration
+    fun animation(type: AnimationType): ToolTipConfiguration
 
     fun arrowWidth(width: Int): ToolTipConfiguration
 

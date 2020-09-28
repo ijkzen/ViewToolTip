@@ -25,7 +25,9 @@ interface ToolTipViewConfiguration {
 
     fun textColor(color: Int)
 
-    fun textSize(size:Float)
+    fun textSize(size: Float)
 
     fun textAlign(align: Int)
+
+    fun animationType(animationType: AnimationType)
 }

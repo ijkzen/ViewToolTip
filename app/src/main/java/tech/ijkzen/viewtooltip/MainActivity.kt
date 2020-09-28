@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.github.ijkzen.AnimationType
 import com.github.ijkzen.TipGravity
 import com.github.ijkzen.ViewToolTip
 import com.github.ijkzen.convertDp2Px
@@ -80,6 +81,7 @@ class MainActivity : AppCompatActivity() {
 //            .text("Are you Ok?")
             .customView(binding5.root)
             .arrowHeight(convertDp2Px(5, this))
+            .animation(AnimationType.REVEAL)
             .gravity(TipGravity.LEFT)
 
         mBinding.text5.setOnClickListener {

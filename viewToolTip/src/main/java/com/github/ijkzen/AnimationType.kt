@@ -1,6 +1,6 @@
 package com.github.ijkzen
 
-enum class TransitionType {
+enum class AnimationType {
     FADE,
     SLIDE,
     SCALE,
