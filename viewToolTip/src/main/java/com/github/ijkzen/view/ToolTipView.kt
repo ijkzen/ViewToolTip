@@ -1,16 +1,20 @@
 package com.github.ijkzen.view
 
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
+import android.util.Log
 import android.view.View
+import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.github.ijkzen.*
+import com.github.ijkzen.control.TipGravity
 
 @SuppressLint("ViewConstructor")
 open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
@@ -36,12 +40,16 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     private val mLayoutParam = WindowManager.LayoutParams()
 
+    private var mAnimationType: AnimationType = AnimationType.FADE
+
     private val mFadeStartAnimator = ValueAnimator.ofFloat(0F, 1F)
         .apply {
             duration = getAnimationDuration()
             addUpdateListener {
                 if (isAttachedToWindow) {
-                    mContentView.alpha = it.animatedValue as Float
+                    val alpha = it.animatedValue as Float
+                    this@ToolTipView.alpha = alpha
+                    mContentView.alpha = alpha
                 }
             }
         }
@@ -52,6 +60,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             addUpdateListener {
                 if (isAttachedToWindow) {
                     val alpha = it.animatedValue as Float
+                    this@ToolTipView.alpha = alpha
                     mContentView.alpha = alpha
 
                     if (alpha == 0F) {
@@ -61,8 +70,44 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             }
         }
 
-    private var mStartAnimator = mFadeStartAnimator
-    private var mEndAnimator = mFadeEndAnimator
+    private val mScaleStartAnimator = ValueAnimator.ofFloat(0F, 1F)
+        .apply {
+            duration = getAnimationDuration()
+            addUpdateListener {
+                if (isAttachedToWindow) {
+                    val scale = it.animatedValue as Float
+                    scaleX = scale
+                    scaleY = scale
+                    mContentView.scaleX = scale
+                    mContentView.scaleY = scale
+                    this@ToolTipView.alpha = scale
+                    mContentView.alpha = scale
+                }
+            }
+        }
+
+    private val mScaleEndAnimator = ValueAnimator.ofFloat(1F, 0F)
+        .apply {
+            duration = getAnimationDuration()
+            addUpdateListener {
+                if (isAttachedToWindow) {
+                    val scale = it.animatedValue as Float
+                    scaleX = scale
+                    scaleY = scale
+                    mContentView.scaleX = scale
+                    mContentView.scaleY = scale
+                    this@ToolTipView.alpha = scale
+                    mContentView.alpha = scale
+
+                    if (alpha == 0F) {
+                        mWindowManager.removeView(this@ToolTipView)
+                    }
+                }
+            }
+        }
+
+    private var mStartAnimator: Animator = mFadeStartAnimator
+    private var mEndAnimator: Animator = mFadeEndAnimator
 
 
     constructor(context: Context) : super(context)
@@ -94,7 +139,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         mTargetRect = targetRect
     }
 
-    fun setWindowLocation(x: Int, y: Int) {
+    private fun setWindowLocation(x: Int, y: Int) {
         mWindowX = if (x < 0) 0 else x
         mWindowY = if (y < 0) 0 else y
     }
@@ -159,7 +204,23 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     override fun animationType(animationType: AnimationType) {
-        //todo
+        mAnimationType = animationType
+        when (animationType) {
+            AnimationType.FADE -> {
+                mStartAnimator = mFadeStartAnimator
+                mEndAnimator = mFadeEndAnimator
+            }
+            AnimationType.SCALE -> {
+                mStartAnimator = mScaleStartAnimator
+                mEndAnimator = mScaleEndAnimator
+            }
+            AnimationType.SLIDE -> {
+
+            }
+            AnimationType.REVEAL -> {
+
+            }
+        }
     }
 
     override fun isWidthMatchParent(match: Boolean) {
@@ -323,9 +384,19 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         setWindowLocation(finalX, finalY)
         mLayoutParam.x = finalX
         mLayoutParam.y = finalY
+        setScaleCenter()
         mWindowManager.addView(this, mLayoutParam)
-        viewTreeObserver.addOnGlobalLayoutListener {
+        post {
+            if (mAnimationType == AnimationType.REVEAL) {
+                mContentView.visibility = INVISIBLE
+            }
+
+            setRevealAnimator()
             mStartAnimator.start()
+
+            if (mAnimationType == AnimationType.REVEAL) {
+                mContentView.visibility = VISIBLE
+            }
         }
     }
 
@@ -345,8 +416,59 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         return result
     }
 
+    private fun setScaleCenter() {
+        if (mAnimationType == AnimationType.SCALE) {
+            getBubblePoints()?.let {
+                mContentView.pivotX = it[1].x - mPadding
+                mContentView.pivotY = it[1].y - mPadding
+            }
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private fun setRevealAnimator() {
+        if (mAnimationType == AnimationType.REVEAL) {
+            val pointF =
+                getBubblePoints()?.get(1) ?: PointF(measuredWidth / 2f, measuredHeight / 2f)
+            val maxRadius =
+                Math.hypot(measuredWidth.toDouble(), measuredHeight.toDouble()).toFloat()
+            mStartAnimator = ViewAnimationUtils.createCircularReveal(
+                mContentView,
+                pointF.x.toInt(),
+                pointF.y.toInt(),
+                0F,
+                maxRadius
+            )
+
+            mEndAnimator = ViewAnimationUtils.createCircularReveal(
+                mContentView,
+                pointF.x.toInt(),
+                pointF.y.toInt(),
+                maxRadius,
+                0F
+            )
+            mEndAnimator.addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    Log.e("test", "animator end")
+                    mWindowManager.removeView(this@ToolTipView)
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+            })
+        }
+    }
+
     override fun dismiss() {
         if (isAttachedToWindow) {
+            isClickable = false
             mEndAnimator.start()
         }
     }
@@ -398,9 +520,9 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                 val c = PointF()
 
                 val arrowMiddle = mArrowLocation
-                a.x = (width - mPadding).toFloat()
+                a.x = (measuredWidth - mPadding).toFloat()
                 a.y = arrowMiddle - mArrowWidth / 2.toFloat()
-                b.x = (width - mPadding + mArrowHeight).toFloat()
+                b.x = (measuredWidth - mPadding + mArrowHeight).toFloat()
                 b.y = arrowMiddle.toFloat()
                 c.x = a.x
                 c.y = arrowMiddle + mArrowWidth / 2.toFloat()
@@ -413,9 +535,9 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
                 val arrowMiddle = mArrowLocation.toFloat()
                 a.x = arrowMiddle - mArrowWidth / 2
-                a.y = (height - mPadding).toFloat()
+                a.y = (measuredHeight - mPadding).toFloat()
                 b.x = arrowMiddle
-                b.y = (height - mPadding + mArrowHeight).toFloat()
+                b.y = (measuredHeight - mPadding + mArrowHeight).toFloat()
                 c.x = arrowMiddle + mArrowWidth / 2
                 c.y = a.y
                 listOf(a, b, c)
@@ -438,8 +560,8 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         val windowRect = Rect(
             mWindowX,
             mWindowY,
-            mWindowX + width,
-            mWindowY + height
+            mWindowX + measuredWidth,
+            mWindowY + measuredHeight
         )
 
         val start: Int

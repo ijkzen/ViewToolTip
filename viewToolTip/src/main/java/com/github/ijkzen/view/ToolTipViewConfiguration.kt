@@ -2,8 +2,7 @@ package com.github.ijkzen.view
 
 import android.graphics.drawable.GradientDrawable
 import android.view.View
-import com.github.ijkzen.AnimationType
-import com.github.ijkzen.TipGravity
+import com.github.ijkzen.control.TipGravity
 
 interface ToolTipViewConfiguration {
 

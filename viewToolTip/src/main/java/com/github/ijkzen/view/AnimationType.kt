@@ -1,4 +1,4 @@
-package com.github.ijkzen
+package com.github.ijkzen.view
 
 enum class AnimationType {
     FADE,

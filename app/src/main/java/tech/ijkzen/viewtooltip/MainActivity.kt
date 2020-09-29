@@ -6,10 +6,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.github.ijkzen.AnimationType
-import com.github.ijkzen.TipGravity
-import com.github.ijkzen.ViewToolTip
+import com.github.ijkzen.control.TipGravity
+import com.github.ijkzen.control.ViewToolTip
 import com.github.ijkzen.convertDp2Px
+import com.github.ijkzen.view.AnimationType
 import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
 

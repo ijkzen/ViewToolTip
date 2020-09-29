@@ -1,4 +1,4 @@
-package com.github.ijkzen
+package com.github.ijkzen.control
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -10,6 +10,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
+import com.github.ijkzen.*
+import com.github.ijkzen.view.AnimationType
 import com.github.ijkzen.view.MaskView
 import com.github.ijkzen.view.ToolTipView
 

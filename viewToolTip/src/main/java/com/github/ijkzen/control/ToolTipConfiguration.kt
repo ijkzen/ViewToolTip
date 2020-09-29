@@ -1,8 +1,9 @@
-package com.github.ijkzen
+package com.github.ijkzen.control
 
 import android.graphics.drawable.GradientDrawable
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
+import com.github.ijkzen.view.AnimationType
 
 interface ToolTipConfiguration {
 

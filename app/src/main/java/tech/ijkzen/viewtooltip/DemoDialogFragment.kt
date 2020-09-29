@@ -7,8 +7,8 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
 import androidx.fragment.app.DialogFragment
-import com.github.ijkzen.TipGravity
-import com.github.ijkzen.ViewToolTip
+import com.github.ijkzen.control.TipGravity
+import com.github.ijkzen.control.ViewToolTip
 import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
 

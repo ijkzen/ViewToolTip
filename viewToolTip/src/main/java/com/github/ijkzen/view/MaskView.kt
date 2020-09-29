@@ -42,7 +42,7 @@ class MaskView(context: Context) : View(context), MaskViewConfiguration {
     private val mStartValueAnimator by lazy {
         ValueAnimator.ofArgb(mStartColor, mEndColor)
             .apply {
-                duration = getAnimationDuration() / 2
+                duration = getAnimationDuration()
                 addUpdateListener {
                     setBackgroundColor(it.animatedValue as Int)
                 }
@@ -52,7 +52,7 @@ class MaskView(context: Context) : View(context), MaskViewConfiguration {
     private val mEndValueAnimator by lazy {
         ValueAnimator.ofArgb(mEndColor, mStartColor)
             .apply {
-                duration = getAnimationDuration() / 2
+                duration = getAnimationDuration()
                 addUpdateListener {
                     val color = it.animatedValue as Int
                     setBackgroundColor(color)
@@ -91,8 +91,11 @@ class MaskView(context: Context) : View(context), MaskViewConfiguration {
     }
 
     override fun dismiss() {
+        isClickable = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mEndValueAnimator.start()
+        } else {
+            mWindowManager.removeView(this)
         }
     }
 }
