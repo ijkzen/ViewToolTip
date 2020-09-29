@@ -78,7 +78,7 @@ class MaskView(context: Context) : View(context), MaskViewConfiguration {
     }
 
     override fun show() {
-        if (!mIsShow && isAttachedToWindow) {
+        if (!mIsShow || isAttachedToWindow) {
             return
         }
 
