@@ -82,11 +82,12 @@ class MainActivity : AppCompatActivity() {
             .customView(binding5.root)
             .isShowMaskBackground(false)
             .arrowHeight(convertDp2Px(5, this))
-            .animation(AnimationType.FADE)
-            .gravity(TipGravity.LEFT)
+            .animation(AnimationType.REVEAL)
+            .isAutoHide(false)
+            .gravity(TipGravity.BOTTOM)
 
         mBinding.text5.setOnClickListener {
-            tip5.gravity(list[count++ % 4])
+//            tip5.gravity(list[count++ % 4])
             tip5.show()
         }
 

@@ -18,8 +18,13 @@ import com.github.ijkzen.control.TipGravity
 open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     companion object {
+        private val SRC_IN_MODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
         private val CLEAR_MODE = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
         private val SRC_MODE = PorterDuffXfermode(PorterDuff.Mode.SRC)
+        private val DST_MODE = PorterDuffXfermode(PorterDuff.Mode.DST)
+
+        private val src = Rect()
+        private val dst = Rect()
     }
 
     private val mWindowManager by lazy { context.getSystemService(Context.WINDOW_SERVICE) as WindowManager }
@@ -49,9 +54,10 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     private var mIsShow = false
     private var mAnimationProgress = 0F
+    private var mSaveCount = -1
     private var mAnimator = ValueAnimator.ofFloat(0F, 1F)
         .apply {
-
+            duration = getAnimationDuration()
             addUpdateListener {
                 mAnimationProgress = it.animatedValue as Float
                 postInvalidate()
@@ -64,6 +70,12 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     if (isAttachedToWindow && !mIsShow) {
                         recycleBitmap()
                         mWindowManager.removeView(this@ToolTipView)
+                    }
+
+                    if (isAttachedToWindow && mIsShow) {
+                        mAnimationProgress = Float.MAX_VALUE
+                        mContentView.visibility = VISIBLE
+                        postInvalidate()
                     }
                 }
 
@@ -178,6 +190,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     override fun show() {
+        mContentView.visibility = visibility
         when (mGravity) {
             TipGravity.LEFT -> {
                 showLeft()
@@ -246,7 +259,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             ViewGroup.LayoutParams.WRAP_CONTENT
         }
 
-        mLayoutParam.height = if (measuredHeight > screenHeight) {
+        mLayoutParam.height = if (measuredHeight >= screenHeight) {
             heightSpec = generateMatchHeightSpec(context)
             ViewGroup.LayoutParams.MATCH_PARENT
         } else {
@@ -304,7 +317,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         measureUnspecifiedView(this)
         val widthSpec: Int
         val heightSpec: Int
-        mLayoutParam.width = if (measuredWidth > screenWidth) {
+        mLayoutParam.width = if (measuredWidth >= screenWidth) {
             widthSpec = generateMatchWidthSpec(context)
             ViewGroup.LayoutParams.MATCH_PARENT
         } else {
@@ -312,7 +325,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             ViewGroup.LayoutParams.WRAP_CONTENT
         }
 
-        mLayoutParam.height = if (measuredHeight > screenHeight) {
+        mLayoutParam.height = if (measuredHeight >= screenHeight) {
             heightSpec = generateMatchHeightSpec(context)
             ViewGroup.LayoutParams.MATCH_PARENT
         } else {
@@ -340,6 +353,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         val windowRect = getWindowRect()
         layout(windowRect.left, windowRect.top, windowRect.right, windowRect.bottom)
         draw(canvas)
+        mContentView.visibility = INVISIBLE
         mWindowManager.addView(this, mLayoutParam)
         mIsShow = true
         mAnimator.start()
@@ -352,7 +366,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     private fun recycleBitmap() {
-        // should be invoked at dismiss()
         if (mBitmap != null) {
             mBitmap!!.recycle()
             mBitmap = null
@@ -379,16 +392,17 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         if (isAttachedToWindow) {
             isClickable = false
             mIsShow = false
+            mAnimationProgress = Float.MAX_VALUE
+            mContentView.visibility = INVISIBLE
+            invalidate()
             mAnimator.start()
         }
     }
 
     override fun onDraw(canvas: Canvas?) {
-        if (isAttachedToWindow && mBitmap != null) {
-            mAnimationPaint.reset()
-            mAnimationPaint.xfermode = CLEAR_MODE
-            canvas?.drawPaint(mAnimationPaint)
-            mAnimationPaint.xfermode = SRC_MODE
+        saveCanvas(canvas)
+        if (isAttachedToWindow && mBitmap != null && mAnimationProgress != Float.MAX_VALUE) {
+            restoreCanvas(canvas)
             if (mIsShow) {
                 showEnterAnimation(canvas)
             } else {
@@ -398,6 +412,22 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             super.onDraw(canvas)
             drawBubble(canvas)
         }
+    }
+
+    private fun saveCanvas(canvas: Canvas?) {
+        if (mSaveCount == -1) {
+            mSaveCount = canvas?.save() ?: -1
+        }
+    }
+
+    private fun restoreCanvas(canvas: Canvas?) {
+        if (mSaveCount != -1) {
+            canvas?.restoreToCount(mSaveCount)
+        }
+        mAnimationPaint.reset()
+        mAnimationPaint.xfermode = CLEAR_MODE
+        canvas?.drawPaint(mAnimationPaint)
+        mAnimationPaint.xfermode = SRC_MODE
     }
 
     private fun drawBubble(canvas: Canvas?) {
@@ -430,15 +460,137 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     private fun showScaleEnterAnimation(canvas: Canvas?) {
+        val scale = mAnimationProgress
+        getBubblePoints()?.let {
+            canvas?.scale(scale, scale, it[1].x, it[1].y)
+            canvas?.drawBitmap(mBitmap!!, 0F, 0F, null)
+        }
 
     }
 
     private fun showSlideEnterAnimation(canvas: Canvas?) {
+        when (mGravity) {
+            TipGravity.LEFT -> {
+                val motion = (mAnimationProgress * measuredWidth).toInt()
+                src.apply {
+                    left = 0
+                    top = 0
+                    right = motion
+                    bottom = measuredHeight
+                }
+                dst.apply {
+                    left = measuredWidth - motion
+                    top = 0
+                    right = measuredWidth
+                    bottom = measuredHeight
+                }
+                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+            }
+            TipGravity.TOP -> {
+                val motion = (mAnimationProgress * measuredHeight).toInt()
+                src.apply {
+                    left = 0
+                    top = 0
+                    right = measuredWidth
+                    bottom = motion
+                }
+                dst.apply {
+                    left = 0
+                    top = measuredHeight - motion
+                    right = measuredWidth
+                    bottom = measuredHeight
+                }
+                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+            }
+            TipGravity.RIGHT -> {
+                val motion = (mAnimationProgress * measuredWidth).toInt()
+                src.apply {
+                    left = measuredWidth - motion
+                    top = 0
+                    right = measuredWidth
+                    bottom = measuredHeight
+                }
+                dst.apply {
+                    left = 0
+                    top = 0
+                    right = motion
+                    bottom = measuredHeight
+                }
+                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+            }
+            else -> {
+                val motion = (mAnimationProgress * measuredHeight).toInt()
+                src.apply {
+                    left = 0
+                    top = measuredHeight - motion
+                    right = measuredWidth
+                    bottom = measuredHeight
+                }
+                dst.apply {
+                    left = 0
+                    top = 0
+                    right = measuredWidth
+                    bottom = motion
+                }
+                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+            }
+        }
+    }
 
+    private fun getMaxRadius(): Int {
+        var maxRadius: Int
+        val points = getBubblePoints()
+        if (points == null) {
+            maxRadius = Math.hypot(measuredWidth.toDouble(), measuredHeight.toDouble()).toInt()
+            return maxRadius
+        }
+        when (mGravity) {
+            TipGravity.LEFT -> {
+                maxRadius = Math.max(
+                    Math.hypot(points[1].x.toDouble(), points[1].y.toDouble()),
+                    Math.hypot(points[1].x.toDouble(), (measuredHeight - points[1].y).toDouble())
+                ).toInt()
+            }
+            TipGravity.TOP -> {
+                maxRadius = Math.max(
+                    Math.hypot(points[1].x.toDouble(), points[1].y.toDouble()),
+                    Math.hypot((measuredWidth - points[1].x).toDouble(), points[1].y.toDouble())
+                ).toInt()
+            }
+            TipGravity.RIGHT -> {
+                maxRadius = Math.max(
+                    Math.hypot(measuredWidth - points[1].x.toDouble(), points[1].y.toDouble()),
+                    Math.hypot(
+                        measuredWidth - points[1].x.toDouble(),
+                        (measuredHeight - points[1].y).toDouble()
+                    )
+                ).toInt()
+            }
+            else -> {
+                maxRadius = Math.max(
+                    Math.hypot(points[1].x.toDouble(), measuredHeight - points[1].y.toDouble()),
+                    Math.hypot(
+                        (measuredWidth - points[1].x).toDouble(),
+                        measuredHeight - points[1].y.toDouble()
+                    )
+                ).toInt()
+            }
+        }
+
+        return maxRadius
     }
 
     private fun showRevealEnterAnimation(canvas: Canvas?) {
-
+        val maxRadius = getMaxRadius()
+        mAnimationPaint.reset()
+        mAnimationPaint.color = Color.WHITE
+        mAnimationPaint.style = Paint.Style.FILL
+        getBubblePoints()?.let {
+            canvas?.drawCircle(it[1].x, it[1].y, maxRadius * mAnimationProgress, mAnimationPaint)
+        }
+        mAnimationPaint.reset()
+        mAnimationPaint.xfermode = SRC_IN_MODE
+        canvas?.drawBitmap(mBitmap!!, 0F, 0F, mAnimationPaint)
     }
 
     private fun showExitAnimation(canvas: Canvas?) {
@@ -465,15 +617,97 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     private fun showScaleExitAnimation(canvas: Canvas?) {
-
+        val scale = 1F - mAnimationProgress
+        getBubblePoints()?.let {
+            canvas?.scale(scale, scale, it[1].x, it[1].y)
+            canvas?.drawBitmap(mBitmap!!, 0F, 0F, null)
+        }
     }
 
     private fun showSlideExitAnimation(canvas: Canvas?) {
-
+        when (mGravity) {
+            TipGravity.LEFT -> {
+                val motion = (mAnimationProgress * measuredWidth).toInt()
+                src.apply {
+                    left = 0
+                    top = 0
+                    right = measuredWidth - motion
+                    bottom = measuredHeight
+                }
+                dst.apply {
+                    left = motion
+                    top = 0
+                    right = measuredWidth
+                    bottom = measuredHeight
+                }
+                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+            }
+            TipGravity.TOP -> {
+                val motion = (mAnimationProgress * measuredHeight).toInt()
+                src.apply {
+                    left = 0
+                    top = 0
+                    right = measuredWidth
+                    bottom = measuredHeight - motion
+                }
+                dst.apply {
+                    left = 0
+                    top = motion
+                    right = measuredWidth
+                    bottom = measuredHeight
+                }
+                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+            }
+            TipGravity.RIGHT -> {
+                val motion = (mAnimationProgress * measuredWidth).toInt()
+                src.apply {
+                    left = motion
+                    top = 0
+                    right = measuredWidth
+                    bottom = measuredHeight
+                }
+                dst.apply {
+                    left = 0
+                    top = 0
+                    right = measuredWidth - motion
+                    bottom = measuredHeight
+                }
+                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+            }
+            else -> {
+                val motion = (mAnimationProgress * measuredHeight).toInt()
+                src.apply {
+                    left = 0
+                    top = motion
+                    right = measuredWidth
+                    bottom = measuredHeight
+                }
+                dst.apply {
+                    left = 0
+                    top = 0
+                    right = measuredWidth
+                    bottom = measuredHeight - motion
+                }
+                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+            }
+        }
     }
 
     private fun showRevealExitAnimation(canvas: Canvas?) {
-
+        val maxRadius = getMaxRadius()
+        mAnimationPaint.color = Color.WHITE
+        mAnimationPaint.style = Paint.Style.FILL
+        getBubblePoints()?.let {
+            canvas?.drawCircle(
+                it[1].x,
+                it[1].y,
+                maxRadius - maxRadius * mAnimationProgress,
+                mAnimationPaint
+            )
+        }
+        mAnimationPaint.reset()
+        mAnimationPaint.xfermode = SRC_IN_MODE
+        canvas?.drawBitmap(mBitmap!!, 0F, 0F, mAnimationPaint)
     }
 
     private fun getBubblePoints(): List<PointF>? {
