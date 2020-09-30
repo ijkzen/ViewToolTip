@@ -6,9 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
-import android.util.Log
 import android.view.View
-import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -19,11 +17,18 @@ import com.github.ijkzen.control.TipGravity
 @SuppressLint("ViewConstructor")
 open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
+    companion object {
+        private val CLEAR_MODE = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        private val SRC_MODE = PorterDuffXfermode(PorterDuff.Mode.SRC)
+    }
+
     private val mWindowManager by lazy { context.getSystemService(Context.WINDOW_SERVICE) as WindowManager }
 
     private var mTargetRect: Rect = Rect()
+    private var mBitmap: Bitmap? = null
     private val mBubblePaint = Paint()
     private val mBubblePath = Path()
+    private val mAnimationPaint = Paint()
     private var mContentView: View = AppCompatTextView(context)
     private var mGravity = TipGravity.AUTO
     private val mPadding = convertDp2Px(10, context)
@@ -42,73 +47,34 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     private var mAnimationType: AnimationType = AnimationType.FADE
 
-    private val mFadeStartAnimator = ValueAnimator.ofFloat(0F, 1F)
+    private var mIsShow = false
+    private var mAnimationProgress = 0F
+    private var mAnimator = ValueAnimator.ofFloat(0F, 1F)
         .apply {
-            duration = getAnimationDuration()
+
             addUpdateListener {
-                if (isAttachedToWindow) {
-                    val alpha = it.animatedValue as Float
-                    this@ToolTipView.alpha = alpha
-                    mContentView.alpha = alpha
-                }
+                mAnimationProgress = it.animatedValue as Float
+                postInvalidate()
             }
-        }
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator?) {
+                }
 
-    private val mFadeEndAnimator = ValueAnimator.ofFloat(1F, 0F)
-        .apply {
-            duration = getAnimationDuration()
-            addUpdateListener {
-                if (isAttachedToWindow) {
-                    val alpha = it.animatedValue as Float
-                    this@ToolTipView.alpha = alpha
-                    mContentView.alpha = alpha
-
-                    if (alpha == 0F) {
+                override fun onAnimationEnd(animation: Animator?) {
+                    if (isAttachedToWindow && !mIsShow) {
+                        recycleBitmap()
                         mWindowManager.removeView(this@ToolTipView)
                     }
                 }
-            }
-        }
 
-    private val mScaleStartAnimator = ValueAnimator.ofFloat(0F, 1F)
-        .apply {
-            duration = getAnimationDuration()
-            addUpdateListener {
-                if (isAttachedToWindow) {
-                    val scale = it.animatedValue as Float
-                    scaleX = scale
-                    scaleY = scale
-                    mContentView.scaleX = scale
-                    mContentView.scaleY = scale
-                    this@ToolTipView.alpha = scale
-                    mContentView.alpha = scale
+                override fun onAnimationCancel(animation: Animator?) {
                 }
-            }
-        }
 
-    private val mScaleEndAnimator = ValueAnimator.ofFloat(1F, 0F)
-        .apply {
-            duration = getAnimationDuration()
-            addUpdateListener {
-                if (isAttachedToWindow) {
-                    val scale = it.animatedValue as Float
-                    scaleX = scale
-                    scaleY = scale
-                    mContentView.scaleX = scale
-                    mContentView.scaleY = scale
-                    this@ToolTipView.alpha = scale
-                    mContentView.alpha = scale
-
-                    if (alpha == 0F) {
-                        mWindowManager.removeView(this@ToolTipView)
-                    }
+                override fun onAnimationRepeat(animation: Animator?) {
                 }
-            }
+
+            })
         }
-
-    private var mStartAnimator: Animator = mFadeStartAnimator
-    private var mEndAnimator: Animator = mFadeEndAnimator
-
 
     constructor(context: Context) : super(context)
 
@@ -205,22 +171,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     override fun animationType(animationType: AnimationType) {
         mAnimationType = animationType
-        when (animationType) {
-            AnimationType.FADE -> {
-                mStartAnimator = mFadeStartAnimator
-                mEndAnimator = mFadeEndAnimator
-            }
-            AnimationType.SCALE -> {
-                mStartAnimator = mScaleStartAnimator
-                mEndAnimator = mScaleEndAnimator
-            }
-            AnimationType.SLIDE -> {
-
-            }
-            AnimationType.REVEAL -> {
-
-            }
-        }
     }
 
     override fun isWidthMatchParent(match: Boolean) {
@@ -378,25 +328,34 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         showAtLocation(x, y)
     }
 
+    @SuppressLint("NewApi")
     private fun showAtLocation(x: Int, y: Int) {
         val finalX = resetX(x)
         val finalY = resetY(y)
         setWindowLocation(finalX, finalY)
         mLayoutParam.x = finalX
         mLayoutParam.y = finalY
-        setScaleCenter()
+        initBitmap()
+        val canvas = Canvas(mBitmap!!)
+        val windowRect = getWindowRect()
+        layout(windowRect.left, windowRect.top, windowRect.right, windowRect.bottom)
+        draw(canvas)
         mWindowManager.addView(this, mLayoutParam)
-        post {
-            if (mAnimationType == AnimationType.REVEAL) {
-                mContentView.visibility = INVISIBLE
-            }
+        mIsShow = true
+        mAnimator.start()
 
-            setRevealAnimator()
-            mStartAnimator.start()
+    }
 
-            if (mAnimationType == AnimationType.REVEAL) {
-                mContentView.visibility = VISIBLE
-            }
+    private fun initBitmap() {
+        recycleBitmap()
+        mBitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
+    }
+
+    private fun recycleBitmap() {
+        // should be invoked at dismiss()
+        if (mBitmap != null) {
+            mBitmap!!.recycle()
+            mBitmap = null
         }
     }
 
@@ -416,71 +375,105 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         return result
     }
 
-    private fun setScaleCenter() {
-        if (mAnimationType == AnimationType.SCALE) {
-            getBubblePoints()?.let {
-                mContentView.pivotX = it[1].x - mPadding
-                mContentView.pivotY = it[1].y - mPadding
-            }
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private fun setRevealAnimator() {
-        if (mAnimationType == AnimationType.REVEAL) {
-            val pointF =
-                getBubblePoints()?.get(1) ?: PointF(measuredWidth / 2f, measuredHeight / 2f)
-            val maxRadius =
-                Math.hypot(measuredWidth.toDouble(), measuredHeight.toDouble()).toFloat()
-            mStartAnimator = ViewAnimationUtils.createCircularReveal(
-                mContentView,
-                pointF.x.toInt(),
-                pointF.y.toInt(),
-                0F,
-                maxRadius
-            )
-
-            mEndAnimator = ViewAnimationUtils.createCircularReveal(
-                mContentView,
-                pointF.x.toInt(),
-                pointF.y.toInt(),
-                maxRadius,
-                0F
-            )
-            mEndAnimator.addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator?) {
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                    Log.e("test", "animator end")
-                    mWindowManager.removeView(this@ToolTipView)
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
-            })
-        }
-    }
-
     override fun dismiss() {
         if (isAttachedToWindow) {
             isClickable = false
-            mEndAnimator.start()
+            mIsShow = false
+            mAnimator.start()
         }
     }
 
     override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
-        drawBubble(canvas)
+        if (isAttachedToWindow && mBitmap != null) {
+            mAnimationPaint.reset()
+            mAnimationPaint.xfermode = CLEAR_MODE
+            canvas?.drawPaint(mAnimationPaint)
+            mAnimationPaint.xfermode = SRC_MODE
+            if (mIsShow) {
+                showEnterAnimation(canvas)
+            } else {
+                showExitAnimation(canvas)
+            }
+        } else {
+            super.onDraw(canvas)
+            drawBubble(canvas)
+        }
     }
 
     private fun drawBubble(canvas: Canvas?) {
         val list = getBubblePoints()
         list?.let { drawBubble(canvas, it[0], it[1], it[2]) }
+    }
+
+    private fun showEnterAnimation(canvas: Canvas?) {
+        when (mAnimationType) {
+            AnimationType.FADE -> showFadeEnterAnimation(canvas)
+            AnimationType.SCALE -> showScaleEnterAnimation(canvas)
+            AnimationType.SLIDE -> showSlideEnterAnimation(canvas)
+            else -> showRevealEnterAnimation(canvas)
+        }
+    }
+
+    private fun showFadeEnterAnimation(canvas: Canvas?) {
+        var alpha = (mAnimationProgress * 255).toInt()
+        if (alpha < 0) {
+            alpha = 0
+        }
+        if (alpha > 255) {
+            alpha = 255
+        }
+
+        mAnimationPaint.reset()
+        mAnimationPaint.alpha = alpha
+
+        canvas?.drawBitmap(mBitmap!!, 0F, 0F, mAnimationPaint)
+    }
+
+    private fun showScaleEnterAnimation(canvas: Canvas?) {
+
+    }
+
+    private fun showSlideEnterAnimation(canvas: Canvas?) {
+
+    }
+
+    private fun showRevealEnterAnimation(canvas: Canvas?) {
+
+    }
+
+    private fun showExitAnimation(canvas: Canvas?) {
+        when (mAnimationType) {
+            AnimationType.FADE -> showFadeExitAnimation(canvas)
+            AnimationType.SCALE -> showScaleExitAnimation(canvas)
+            AnimationType.SLIDE -> showSlideExitAnimation(canvas)
+            else -> showRevealExitAnimation(canvas)
+        }
+    }
+
+    private fun showFadeExitAnimation(canvas: Canvas?) {
+        var alpha = (mAnimationProgress * 255).toInt()
+        if (alpha < 0) {
+            alpha = 0
+        }
+        if (alpha > 255) {
+            alpha = 255
+        }
+
+        mAnimationPaint.reset()
+        mAnimationPaint.alpha = 255 - alpha
+        canvas?.drawBitmap(mBitmap!!, 0F, 0F, mAnimationPaint)
+    }
+
+    private fun showScaleExitAnimation(canvas: Canvas?) {
+
+    }
+
+    private fun showSlideExitAnimation(canvas: Canvas?) {
+
+    }
+
+    private fun showRevealExitAnimation(canvas: Canvas?) {
+
     }
 
     private fun getBubblePoints(): List<PointF>? {
@@ -557,12 +550,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     private fun updateArrowLocation() {
-        val windowRect = Rect(
-            mWindowX,
-            mWindowY,
-            mWindowX + measuredWidth,
-            mWindowY + measuredHeight
-        )
+        val windowRect = getWindowRect()
 
         val start: Int
         val end: Int
@@ -578,5 +566,14 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             }
         }
         mArrowLocation = (start + end) / 2
+    }
+
+    private fun getWindowRect(): Rect {
+        return Rect(
+            mWindowX,
+            mWindowY,
+            mWindowX + measuredWidth,
+            mWindowY + measuredHeight
+        )
     }
 }

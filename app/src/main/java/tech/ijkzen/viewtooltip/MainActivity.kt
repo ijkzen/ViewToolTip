@@ -80,8 +80,9 @@ class MainActivity : AppCompatActivity() {
         val tip5 = ViewToolTip.on(mBinding.text5)
 //            .text("Are you Ok?")
             .customView(binding5.root)
+            .isShowMaskBackground(false)
             .arrowHeight(convertDp2Px(5, this))
-            .animation(AnimationType.REVEAL)
+            .animation(AnimationType.FADE)
             .gravity(TipGravity.LEFT)
 
         mBinding.text5.setOnClickListener {
