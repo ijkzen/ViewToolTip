@@ -2,6 +2,7 @@ package com.github.ijkzen
 
 import android.content.Context
 import android.util.DisplayMetrics
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -18,7 +19,9 @@ fun screenWidth(context: Context): Int {
 
 fun screenHeight(context: Context): Int {
     val dm = DisplayMetrics()
-    (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealMetrics(dm)
+    (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealMetrics(
+        dm
+    )
     return dm.heightPixels
 }
 
@@ -38,11 +41,14 @@ fun generateWrapHeightSpec(context: Context): Int {
     return View.MeasureSpec.makeMeasureSpec(screenHeight(context), View.MeasureSpec.AT_MOST)
 }
 
-fun generateMatchWidthLayout(): FrameLayout.LayoutParams{
-    return FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+fun generateMatchWidthLayout(): FrameLayout.LayoutParams {
+    return FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    )
 }
 
-fun isWidthMatchSpace(view: View):Boolean{
+fun isWidthMatchSpace(view: View): Boolean {
     val layout = view.layoutParams
     return layout != null && layout.width == ViewGroup.LayoutParams.MATCH_PARENT
 }
@@ -50,3 +56,12 @@ fun isWidthMatchSpace(view: View):Boolean{
 fun measureUnspecifiedView(view: View) {
     view.measure(generateWrapWidthSpec(view.context), generateWrapHeightSpec(view.context))
 }
+
+fun getFlags(): Int {
+    return WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+}
+
+fun getWindowGravity() = Gravity.LEFT or Gravity.TOP
+
+fun getAnimationDuration(): Long = 300

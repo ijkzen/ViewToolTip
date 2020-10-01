@@ -52,6 +52,9 @@ tip1.show()
 ```kotlin
 interface ToolTipConfiguration {
     fun customView(contentView: View): ViewToolTip
+    
+    // Set animation for popupWindow, support fade, slide, scale and reveal
+    fun animation(type: AnimationType): ToolTipConfiguration
 
     // For gravity top or bottom, PopupWindow will match screen width.
     fun widthMatchParent(match: Boolean): ViewToolTip
@@ -62,19 +65,19 @@ interface ToolTipConfiguration {
     // width for arrow pointing to the targetView.
     fun arrowWidth(width: Int): ViewToolTip
 
-    // height for arrow pointing to the targetView.
+    // height for arrow pointing to the targetView, at most 10 dp.
     fun arrowHeight(height: Int): ViewToolTip
 
     // color for arrow pointing to the targetView
     fun arrowColor(color: Int): ViewToolTip
 
-    // set background for popupWindow if not customView
+    // set background for popupWindow
     fun background(background: GradientDrawable): ViewToolTip
 
-    // set background color for popupWindow if not customView
+    // set background color for popupWindow 
     fun backgroundColor(color: Int): ViewToolTip
 
-    // set background radius for popupWindow if not customView
+    // set background radius for popupWindow 
     fun backgroundRadius(radius: Int): ViewToolTip
 
     // set text for popupWindow if not customView

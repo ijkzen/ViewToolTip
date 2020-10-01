@@ -6,9 +6,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.github.ijkzen.TipGravity
-import com.github.ijkzen.ViewToolTip
+import com.github.ijkzen.control.TipGravity
+import com.github.ijkzen.control.ViewToolTip
 import com.github.ijkzen.convertDp2Px
+import com.github.ijkzen.view.AnimationType
 import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
 
@@ -20,6 +21,12 @@ class MainActivity : AppCompatActivity() {
         TipGravity.TOP,
         TipGravity.RIGHT,
         TipGravity.BOTTOM
+    )
+    private val animationList = arrayListOf(
+        AnimationType.FADE,
+        AnimationType.SCALE,
+        AnimationType.SLIDE,
+        AnimationType.REVEAL
     )
     private var count = 0
 
@@ -77,13 +84,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val tip5 = ViewToolTip.on(mBinding.text5)
-//            .text("Are you Ok?")
             .customView(binding5.root)
             .arrowHeight(convertDp2Px(5, this))
-            .gravity(TipGravity.LEFT)
 
         mBinding.text5.setOnClickListener {
             tip5.gravity(list[count++ % 4])
+            tip5.animation(animationList[count % 4])
             tip5.show()
         }
 

@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.github.ijkzen.TipGravity
-import com.github.ijkzen.ViewToolTip
+import com.github.ijkzen.control.TipGravity
+import com.github.ijkzen.control.ViewToolTip
 import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
 

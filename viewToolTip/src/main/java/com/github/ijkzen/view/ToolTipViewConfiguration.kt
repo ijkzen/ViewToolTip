@@ -1,7 +1,8 @@
-package com.github.ijkzen
+package com.github.ijkzen.view
 
 import android.graphics.drawable.GradientDrawable
 import android.view.View
+import com.github.ijkzen.control.TipGravity
 
 interface ToolTipViewConfiguration {
 
@@ -25,7 +26,15 @@ interface ToolTipViewConfiguration {
 
     fun textColor(color: Int)
 
-    fun textSize(size:Float)
+    fun textSize(size: Float)
 
     fun textAlign(align: Int)
+
+    fun animationType(animationType: AnimationType)
+
+    fun isWidthMatchParent(match: Boolean)
+
+    fun show()
+
+    fun dismiss()
 }

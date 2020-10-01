@@ -19,16 +19,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/content"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
         android:layout_marginTop="20dp"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        android:text="Internet access is the ability of individuals and organizations to connect to the Internet using computer terminals, computers, and other devices; and to access services such as email and the World Wide Web. Internet access is sold by Internet service providers (ISPs) delivering connectivity at a wide range of data transfer rates via various networking technologies. Many organizations, including a growing number of municipal entities, also provide cost-free wireless access and landlines. "
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"/>
+        android:layout_height="80dp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Internet access is the ability of individuals and organizations to connect to the Internet using computer terminals, computers, and other devices; and to access services such as email and the World Wide Web. Internet access is sold by Internet service providers (ISPs) delivering connectivity at a wide range of data transfer rates via various networking technologies. Many organizations, including a growing number of municipal entities, also provide cost-free wireless access and landlines. "
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp" />
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
