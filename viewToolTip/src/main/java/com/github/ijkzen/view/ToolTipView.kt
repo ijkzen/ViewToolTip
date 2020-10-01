@@ -21,41 +21,39 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         private val SRC_IN_MODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
         private val CLEAR_MODE = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
         private val SRC_MODE = PorterDuffXfermode(PorterDuff.Mode.SRC)
-        private val DST_MODE = PorterDuffXfermode(PorterDuff.Mode.DST)
 
         private val src = Rect()
         private val dst = Rect()
     }
 
+    // about window manager
     private val mWindowManager by lazy { context.getSystemService(Context.WINDOW_SERVICE) as WindowManager }
-
     private var mTargetRect: Rect = Rect()
-    private var mBitmap: Bitmap? = null
-    private val mBubblePaint = Paint()
-    private val mBubblePath = Path()
-    private val mAnimationPaint = Paint()
-    private var mContentView: View = AppCompatTextView(context)
+    private var mWindowX: Int = 0
+    private var mWindowY: Int = 0
     private var mGravity = TipGravity.AUTO
+    private val mLayoutParam = WindowManager.LayoutParams()
+    private var mIsShow = false
+
+    // about view property
+    private var mContentView: View = AppCompatTextView(context)
     private val mPadding = convertDp2Px(10, context)
     private var mArrowWidth = (mPadding * 1.2).toInt()
     private var mArrowHeight = (mPadding * 0.8).toInt()
     private var mArrowLocation: Int = 0
     private var mBackground = GradientDrawable()
-    private var mWindowX: Int = 0
-    private var mWindowY: Int = 0
-
     private var mIsWidthMatchParent = false
     private val screenWidth = screenWidth(context)
     private val screenHeight = screenHeight(context)
+    private val mBubblePaint = Paint()
+    private val mBubblePath = Path()
 
-    private val mLayoutParam = WindowManager.LayoutParams()
-
+    // about animation for enter and exit
+    private var mBitmap: Bitmap? = null
+    private val mAnimationPaint = Paint()
     private var mAnimationType: AnimationType = AnimationType.FADE
-
-    private var mIsShow = false
     private var mAnimationProgress = 0F
-    private var mSaveCount = -1
-    private var mAnimator = ValueAnimator.ofFloat(0F, 1F)
+    private var mAnimator = ValueAnimator.ofFloat(0.1F, 1F)
         .apply {
             duration = getAnimationDuration()
             addUpdateListener {
@@ -73,7 +71,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     }
 
                     if (isAttachedToWindow && mIsShow) {
-                        mAnimationProgress = Float.MAX_VALUE
                         mContentView.visibility = VISIBLE
                         postInvalidate()
                     }
@@ -146,21 +143,17 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     override fun background(background: GradientDrawable) {
         mBackground = background
-        if (mContentView is AppCompatTextView) {
-            mContentView.background = mBackground
-        }
+        mContentView.background = mBackground
     }
 
     override fun backgroundColor(color: Int) {
         mBackground.setColor(color)
-        if (mContentView is AppCompatTextView) {
-            mContentView.background = mBackground
-        }
+        mContentView.background = mBackground
     }
 
     override fun backgroundRadius(radius: Int) {
         mBackground.cornerRadius = radius.toFloat()
-        if (mContentView is AppCompatTextView) {
+        if (mContentView.background is GradientDrawable) {
             mContentView.background = mBackground
         }
     }
@@ -391,8 +384,8 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     override fun dismiss() {
         if (isAttachedToWindow) {
             isClickable = false
+            mContentView.isClickable = false
             mIsShow = false
-            mAnimationProgress = Float.MAX_VALUE
             mContentView.visibility = INVISIBLE
             invalidate()
             mAnimator.start()
@@ -400,9 +393,8 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     override fun onDraw(canvas: Canvas?) {
-        saveCanvas(canvas)
-        if (isAttachedToWindow && mBitmap != null && mAnimationProgress != Float.MAX_VALUE) {
-            restoreCanvas(canvas)
+        if (isAttachedToWindow && mBitmap != null && !isVisible(mContentView)) {
+            resetCanvas(canvas)
             if (mIsShow) {
                 showEnterAnimation(canvas)
             } else {
@@ -410,20 +402,15 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             }
         } else {
             super.onDraw(canvas)
-            drawBubble(canvas)
+            if (isVisible(mContentView)) {
+                drawBubble(canvas)
+            }
         }
     }
 
-    private fun saveCanvas(canvas: Canvas?) {
-        if (mSaveCount == -1) {
-            mSaveCount = canvas?.save() ?: -1
-        }
-    }
+    private fun isVisible(view: View) = view.visibility == View.VISIBLE
 
-    private fun restoreCanvas(canvas: Canvas?) {
-        if (mSaveCount != -1) {
-            canvas?.restoreToCount(mSaveCount)
-        }
+    private fun resetCanvas(canvas: Canvas?) {
         mAnimationPaint.reset()
         mAnimationPaint.xfermode = CLEAR_MODE
         canvas?.drawPaint(mAnimationPaint)
@@ -465,7 +452,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             canvas?.scale(scale, scale, it[1].x, it[1].y)
             canvas?.drawBitmap(mBitmap!!, 0F, 0F, null)
         }
-
     }
 
     private fun showSlideEnterAnimation(canvas: Canvas?) {

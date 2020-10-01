@@ -22,6 +22,12 @@ class MainActivity : AppCompatActivity() {
         TipGravity.RIGHT,
         TipGravity.BOTTOM
     )
+    private val animationList = arrayListOf(
+        AnimationType.FADE,
+        AnimationType.SCALE,
+        AnimationType.SLIDE,
+        AnimationType.REVEAL
+    )
     private var count = 0
 
     private lateinit var mBinding: ActivityMainBinding
@@ -78,16 +84,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val tip5 = ViewToolTip.on(mBinding.text5)
-//            .text("Are you Ok?")
             .customView(binding5.root)
-            .isShowMaskBackground(false)
             .arrowHeight(convertDp2Px(5, this))
-            .animation(AnimationType.REVEAL)
-            .isAutoHide(false)
-            .gravity(TipGravity.BOTTOM)
 
         mBinding.text5.setOnClickListener {
-//            tip5.gravity(list[count++ % 4])
+            tip5.gravity(list[count++ % 4])
+            tip5.animation(animationList[count % 4])
             tip5.show()
         }
 
