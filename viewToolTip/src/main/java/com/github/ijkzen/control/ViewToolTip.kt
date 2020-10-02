@@ -91,7 +91,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
     private fun isValidGravity(tipGravity: TipGravity, matchParent: Boolean): Boolean {
         if (tipGravity == TipGravity.AUTO) {
-            return true
+            return false
         }
 
         when (tipGravity) {

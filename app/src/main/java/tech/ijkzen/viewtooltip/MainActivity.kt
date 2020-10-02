@@ -87,10 +87,10 @@ class MainActivity : AppCompatActivity() {
             .customView(binding5.root)
             .arrowHeight(convertDp2Px(5, this))
 
-        mBinding.text5.setOnClickListener {
-            tip5.gravity(list[count++ % 4])
-            tip5.animation(animationList[count % 4])
+        mBinding.text5.setOnLongClickListener {
+            tip5.animation(animationList[count++ % 4])
             tip5.show()
+            return@setOnLongClickListener true
         }
 
         val tip6 = ViewToolTip.on(mBinding.text6)

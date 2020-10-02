@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.github.ijkzen.*
@@ -40,7 +41,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     private var mContentView: View = AppCompatTextView(context)
     private val mPadding = convertDp2Px(10, context)
     private var mArrowWidth = (mPadding * 1.2).toInt()
-    private var mArrowHeight = (mPadding * 0.8).toInt()
+    private var mArrowHeight = (mPadding * 0.5).toInt()
     private var mArrowLocation: Int = 0
     private var mBackground = GradientDrawable()
     private var mIsWidthMatchParent = false
@@ -57,6 +58,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     private var mAnimator = ValueAnimator.ofFloat(0.1F, 1F)
         .apply {
             duration = getAnimationDuration()
+            interpolator = AccelerateDecelerateInterpolator()
             addUpdateListener {
                 mAnimationProgress = it.animatedValue as Float
                 postInvalidate()
