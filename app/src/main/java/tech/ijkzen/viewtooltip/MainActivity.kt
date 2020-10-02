@@ -8,7 +8,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.github.ijkzen.control.TipGravity
 import com.github.ijkzen.control.ViewToolTip
-import com.github.ijkzen.convertDp2Px
 import com.github.ijkzen.view.AnimationType
 import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
@@ -85,7 +84,8 @@ class MainActivity : AppCompatActivity() {
 
         val tip5 = ViewToolTip.on(mBinding.text5)
             .customView(binding5.root)
-            .arrowHeight(convertDp2Px(5, this))
+            .gravity(TipGravity.TOP)
+            .isShowMaskBackground(false)
 
         mBinding.text5.setOnLongClickListener {
             tip5.animation(animationList[count++ % 4])

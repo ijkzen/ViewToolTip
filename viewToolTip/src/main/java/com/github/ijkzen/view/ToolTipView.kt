@@ -10,7 +10,7 @@ import android.os.IBinder
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AccelerateInterpolator
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.github.ijkzen.*
@@ -58,7 +58,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     private var mAnimator = ValueAnimator.ofFloat(0.1F, 1F)
         .apply {
             duration = getAnimationDuration()
-            interpolator = AccelerateDecelerateInterpolator()
+            interpolator = AccelerateInterpolator()
             addUpdateListener {
                 mAnimationProgress = it.animatedValue as Float
                 postInvalidate()
@@ -455,13 +455,19 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     private fun showScaleEnterAnimation(canvas: Canvas?) {
         val scale = mAnimationProgress
+        val alpha = (mAnimationProgress * 255).toInt()
+        mAnimationPaint.reset()
+        mAnimationPaint.alpha = alpha
         getBubblePoints()?.let {
             canvas?.scale(scale, scale, it[1].x, it[1].y)
-            canvas?.drawBitmap(mBitmap!!, 0F, 0F, null)
+            canvas?.drawBitmap(mBitmap!!, 0F, 0F, mAnimationPaint)
         }
     }
 
     private fun showSlideEnterAnimation(canvas: Canvas?) {
+        val alpha = (mAnimationProgress * 255).toInt()
+        mAnimationPaint.reset()
+        mAnimationPaint.alpha = alpha
         when (mGravity) {
             TipGravity.LEFT -> {
                 val motion = (mAnimationProgress * measuredWidth).toInt()
@@ -477,7 +483,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     right = measuredWidth
                     bottom = measuredHeight
                 }
-                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+                canvas?.drawBitmap(mBitmap!!, src, dst, mAnimationPaint)
             }
             TipGravity.TOP -> {
                 val motion = (mAnimationProgress * measuredHeight).toInt()
@@ -493,7 +499,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     right = measuredWidth
                     bottom = measuredHeight
                 }
-                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+                canvas?.drawBitmap(mBitmap!!, src, dst, mAnimationPaint)
             }
             TipGravity.RIGHT -> {
                 val motion = (mAnimationProgress * measuredWidth).toInt()
@@ -509,7 +515,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     right = motion
                     bottom = measuredHeight
                 }
-                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+                canvas?.drawBitmap(mBitmap!!, src, dst, mAnimationPaint)
             }
             else -> {
                 val motion = (mAnimationProgress * measuredHeight).toInt()
@@ -525,7 +531,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     right = measuredWidth
                     bottom = motion
                 }
-                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+                canvas?.drawBitmap(mBitmap!!, src, dst, mAnimationPaint)
             }
         }
     }
@@ -611,13 +617,19 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     private fun showScaleExitAnimation(canvas: Canvas?) {
         val scale = 1F - mAnimationProgress
+        val alpha = 255 - (mAnimationProgress * 255).toInt()
+        mAnimationPaint.reset()
+        mAnimationPaint.alpha = alpha
         getBubblePoints()?.let {
             canvas?.scale(scale, scale, it[1].x, it[1].y)
-            canvas?.drawBitmap(mBitmap!!, 0F, 0F, null)
+            canvas?.drawBitmap(mBitmap!!, 0F, 0F, mAnimationPaint)
         }
     }
 
     private fun showSlideExitAnimation(canvas: Canvas?) {
+        val alpha = 255 - (mAnimationProgress * 255).toInt()
+        mAnimationPaint.reset()
+        mAnimationPaint.alpha = alpha
         when (mGravity) {
             TipGravity.LEFT -> {
                 val motion = (mAnimationProgress * measuredWidth).toInt()
@@ -633,7 +645,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     right = measuredWidth
                     bottom = measuredHeight
                 }
-                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+                canvas?.drawBitmap(mBitmap!!, src, dst, mAnimationPaint)
             }
             TipGravity.TOP -> {
                 val motion = (mAnimationProgress * measuredHeight).toInt()
@@ -649,7 +661,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     right = measuredWidth
                     bottom = measuredHeight
                 }
-                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+                canvas?.drawBitmap(mBitmap!!, src, dst, mAnimationPaint)
             }
             TipGravity.RIGHT -> {
                 val motion = (mAnimationProgress * measuredWidth).toInt()
@@ -665,7 +677,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     right = measuredWidth - motion
                     bottom = measuredHeight
                 }
-                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+                canvas?.drawBitmap(mBitmap!!, src, dst, mAnimationPaint)
             }
             else -> {
                 val motion = (mAnimationProgress * measuredHeight).toInt()
@@ -681,7 +693,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     right = measuredWidth
                     bottom = measuredHeight - motion
                 }
-                canvas?.drawBitmap(mBitmap!!, src, dst, null)
+                canvas?.drawBitmap(mBitmap!!, src, dst, mAnimationPaint)
             }
         }
     }
