@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.IBinder
 import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
@@ -75,6 +76,10 @@ class MaskView(context: Context) : View(context), MaskViewConfiguration {
 
     override fun isShowBackground(show: Boolean) {
         mIsShow = show
+    }
+
+    override fun token(token: IBinder) {
+        mLayoutParam.token = token
     }
 
     override fun show() {

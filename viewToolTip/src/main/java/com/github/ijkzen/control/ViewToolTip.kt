@@ -75,7 +75,9 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
         isShowing = true
         initTargetRect()
 
+        mMaskView.token(mTargetView.windowToken)
         mMaskView.show()
+        mTipView.token(mTargetView.windowToken)
         if (isValidGravity(mTipGravity, mIsWidthMatchParent)) {
             showGravity(mTipGravity)
         } else {

@@ -57,7 +57,6 @@ open class DemoDialogFragment : DialogFragment() {
         dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
         val window = dialog!!.window
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        isCancelable = false
 
         mBinding = ActivityMainBinding.inflate(inflater, container, false)
 

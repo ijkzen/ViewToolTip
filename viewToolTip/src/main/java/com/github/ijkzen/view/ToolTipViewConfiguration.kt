@@ -1,6 +1,7 @@
 package com.github.ijkzen.view
 
 import android.graphics.drawable.GradientDrawable
+import android.os.IBinder
 import android.view.View
 import com.github.ijkzen.control.TipGravity
 
@@ -33,6 +34,8 @@ interface ToolTipViewConfiguration {
     fun animationType(animationType: AnimationType)
 
     fun isWidthMatchParent(match: Boolean)
+
+    fun token(token: IBinder)
 
     fun show()
 
