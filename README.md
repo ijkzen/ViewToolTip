@@ -1,4 +1,13 @@
 ![bage](https://jitpack.io/v/ijkzen/ViewToolTip.svg) ![week_download](https://jitpack.io/v/ijkzen/ViewToolTip/week.svg) ![month_download](https://jitpack.io/v/ijkzen/ViewToolTip/month.svg) ![build status](https://github.com/ijkzen/ViewToolTip/workflows/ViewToolTip/badge.svg)
+
+### Features
+
+- show tip anywhere
+- show tip with gravity
+- show tip with animation including fade, slide, scale and reveal
+- set arrow location automatically
+- customize arrow width and height
+
 ### Preview
 
 <img src='preview/preview.gif' height=800px/>
