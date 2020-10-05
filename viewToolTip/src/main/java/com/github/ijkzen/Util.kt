@@ -64,4 +64,4 @@ fun getFlags(): Int {
 
 fun getWindowGravity() = Gravity.LEFT or Gravity.TOP
 
-fun getAnimationDuration(): Long = 300
+fun getAnimationDuration(): Long = 500

@@ -10,7 +10,7 @@ import android.os.IBinder
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.github.ijkzen.*
@@ -58,7 +58,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     private var mAnimator = ValueAnimator.ofFloat(0.1F, 1F)
         .apply {
             duration = getAnimationDuration()
-            interpolator = AccelerateInterpolator()
+            interpolator = DecelerateInterpolator()
             addUpdateListener {
                 mAnimationProgress = it.animatedValue as Float
                 postInvalidate()
