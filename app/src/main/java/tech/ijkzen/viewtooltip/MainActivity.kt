@@ -85,7 +85,6 @@ class MainActivity : AppCompatActivity() {
         val tip5 = ViewToolTip.on(mBinding.text5)
             .customView(binding5.root)
             .gravity(TipGravity.TOP)
-            .isShowMaskBackground(false)
 
         mBinding.text5.setOnLongClickListener {
             tip5.animation(animationList[count++ % 4])

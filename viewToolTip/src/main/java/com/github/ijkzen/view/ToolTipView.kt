@@ -61,7 +61,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             interpolator = DecelerateInterpolator()
             addUpdateListener {
                 mAnimationProgress = it.animatedValue as Float
-                postInvalidate()
+                invalidate()
             }
             addListener(object : Animator.AnimatorListener {
                 override fun onAnimationStart(animation: Animator?) {
@@ -190,7 +190,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     override fun show() {
-        mContentView.visibility = visibility
+        mContentView.visibility = VISIBLE
         when (mGravity) {
             TipGravity.LEFT -> {
                 showLeft()
