@@ -57,7 +57,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     // about animation for enter and exit
     private var mBitmap: Bitmap? = null
     private val mAnimationPaint = Paint()
-    private var mAnimationType: AnimationType = AnimationType.FADE
+    private var mAnimationType: AnimationType = AnimationType.NONE
     private var mAnimationProgress = 0F
     private var mAnimator = ValueAnimator.ofFloat(0.1F, 1F)
         .apply {
@@ -354,11 +354,14 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         mLayoutParam.x = finalX
         mLayoutParam.y = finalY
         initBitmap()
-        mContentView.visibility = INVISIBLE
+        if (mAnimationType != AnimationType.NONE) {
+            mContentView.visibility = INVISIBLE
+        }
         mWindowManager.addView(this, mLayoutParam)
         mIsShow = true
-        mAnimator.start()
-
+        if (mAnimationType != AnimationType.NONE) {
+            mAnimator.start()
+        }
     }
 
     private fun initBitmap() {
@@ -398,6 +401,10 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             isClickable = false
             mContentView.isClickable = false
             mIsShow = false
+            if (mAnimationType == AnimationType.NONE) {
+                mWindowManager.removeView(this)
+                return
+            }
             mContentView.visibility = INVISIBLE
             invalidate()
             mAnimator.start()
