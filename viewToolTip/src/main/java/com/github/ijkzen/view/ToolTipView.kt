@@ -13,6 +13,10 @@ import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.view.marginBottom
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
+import androidx.core.view.marginTop
 import com.github.ijkzen.*
 import com.github.ijkzen.control.TipGravity
 
@@ -91,6 +95,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     constructor(context: Context) : super(context)
 
     init {
+        setWillNotDraw(false)
         setPadding(mPadding, mPadding, mPadding, mPadding)
         mContentView.setPadding(mPadding, mPadding, mPadding, mPadding)
         addView(
@@ -349,10 +354,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         mLayoutParam.x = finalX
         mLayoutParam.y = finalY
         initBitmap()
-        val canvas = Canvas(mBitmap!!)
-        val windowRect = getWindowRect()
-        layout(windowRect.left, windowRect.top, windowRect.right, windowRect.bottom)
-        draw(canvas)
         mContentView.visibility = INVISIBLE
         mWindowManager.addView(this, mLayoutParam)
         mIsShow = true
@@ -363,6 +364,10 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     private fun initBitmap() {
         recycleBitmap()
         mBitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(mBitmap!!)
+        val windowRect = getWindowRect()
+        layout(windowRect.left, windowRect.top, windowRect.right, windowRect.bottom)
+        draw(canvas)
     }
 
     private fun recycleBitmap() {
@@ -409,9 +414,13 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
             }
         } else {
             super.onDraw(canvas)
-            if (isVisible(mContentView)) {
-                drawBubble(canvas)
-            }
+        }
+    }
+
+    override fun onDrawForeground(canvas: Canvas?) {
+        super.onDrawForeground(canvas)
+        if (isVisible(mContentView)) {
+            drawBubble(canvas)
         }
     }
 
@@ -724,11 +733,11 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                 val c = PointF()
 
                 val arrowMiddle = mArrowLocation
-                a.x = mPadding.toFloat()
+                a.x = mPadding.toFloat() + getContentViewMargin()
                 a.y = arrowMiddle - mArrowWidth / 2.toFloat()
-                b.x = mPadding.toFloat() - mArrowHeight
+                b.x = mPadding.toFloat() - mArrowHeight + getContentViewMargin()
                 b.y = arrowMiddle.toFloat()
-                c.x = mPadding.toFloat()
+                c.x = mPadding.toFloat() + getContentViewMargin()
                 c.y = arrowMiddle + mArrowWidth / 2.toFloat()
                 listOf(a, b, c)
             }
@@ -739,11 +748,11 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
                 val arrowMiddle = mArrowLocation
                 a.x = arrowMiddle - mArrowWidth / 2.toFloat()
-                a.y = mPadding.toFloat()
+                a.y = mPadding.toFloat() + getContentViewMargin()
                 b.x = arrowMiddle.toFloat()
-                b.y = (mPadding - mArrowHeight).toFloat()
+                b.y = (mPadding - mArrowHeight).toFloat() + getContentViewMargin()
                 c.x = arrowMiddle + mArrowWidth / 2.toFloat()
-                c.y = mPadding.toFloat()
+                c.y = mPadding.toFloat() + getContentViewMargin()
                 listOf(a, b, c)
             }
             TipGravity.LEFT -> {
@@ -752,9 +761,10 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                 val c = PointF()
 
                 val arrowMiddle = mArrowLocation
-                a.x = (measuredWidth - mPadding).toFloat()
+                a.x = (measuredWidth - mPadding).toFloat() - getContentViewMargin()
                 a.y = arrowMiddle - mArrowWidth / 2.toFloat()
-                b.x = (measuredWidth - mPadding + mArrowHeight).toFloat()
+                b.x =
+                    (measuredWidth - mPadding + mArrowHeight).toFloat() - getContentViewMargin()
                 b.y = arrowMiddle.toFloat()
                 c.x = a.x
                 c.y = arrowMiddle + mArrowWidth / 2.toFloat()
@@ -767,14 +777,33 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
                 val arrowMiddle = mArrowLocation.toFloat()
                 a.x = arrowMiddle - mArrowWidth / 2
-                a.y = (measuredHeight - mPadding).toFloat()
+                a.y = (measuredHeight - mPadding).toFloat() - getContentViewMargin()
                 b.x = arrowMiddle
-                b.y = (measuredHeight - mPadding + mArrowHeight).toFloat()
+                b.y =
+                    (measuredHeight - mPadding + mArrowHeight).toFloat() - getContentViewMargin()
                 c.x = arrowMiddle + mArrowWidth / 2
                 c.y = a.y
                 listOf(a, b, c)
             }
             else -> null
+        }
+    }
+
+    private fun getContentViewMargin(): Int {
+        return when (mGravity) {
+            TipGravity.LEFT -> mContentView.marginLeft
+            TipGravity.TOP -> mContentView.marginTop
+            TipGravity.RIGHT -> mContentView.marginRight
+            TipGravity.BOTTOM -> mContentView.marginBottom
+            else -> 0
+        }
+    }
+
+    private fun getContentViewElevation(): Float {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            mContentView.elevation
+        } else {
+            0F
         }
     }
 
@@ -785,6 +814,9 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         mBubblePath.lineTo(c.x, c.y)
         mBubblePath.close()
 
+        if (getContentViewElevation() != 0F) {
+            mBubblePaint.setShadowLayer(getContentViewElevation(), 0F, getContentViewElevation(), Color.LTGRAY)
+        }
         canvas?.drawPath(mBubblePath, mBubblePaint)
     }
 

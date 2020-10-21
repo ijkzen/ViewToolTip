@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.github.ijkzen.control.TipGravity
 import com.github.ijkzen.control.ViewToolTip
+import com.github.ijkzen.convertDp2Px
 import com.github.ijkzen.view.AnimationType
 import tech.ijkzen.viewtooltip.databinding.ActivityMainBinding
 import tech.ijkzen.viewtooltip.databinding.DialogShowBinding
@@ -40,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         val binding2 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
         val binding3 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
         val binding4 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
-        val binding5 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
+        val binding5 = DialogShowBinding.inflate(LayoutInflater.from(this), mBinding.root, false)
         val binding6 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
         val binding7 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
         val binding8 = DialogShowBinding.inflate(LayoutInflater.from(this), null, false)
@@ -85,9 +87,12 @@ class MainActivity : AppCompatActivity() {
         val tip5 = ViewToolTip.on(mBinding.text5)
             .customView(binding5.root)
             .gravity(TipGravity.TOP)
+            .arrowHeight(convertDp2Px(10, this))
+            .arrowWidth(convertDp2Px(24, this))
+            .isAutoHide(false)
 
         mBinding.text5.setOnLongClickListener {
-            tip5.animation(animationList[count++ % 4])
+            tip5.animation(AnimationType.REVEAL)
             tip5.show()
             return@setOnLongClickListener true
         }
