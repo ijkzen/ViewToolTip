@@ -40,6 +40,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     private var mGravity = TipGravity.AUTO
     private val mLayoutParam = WindowManager.LayoutParams()
     private var mIsShow = false
+    private var mContentVisible = false
 
     // about view property
     private var mContentView: View = AppCompatTextView(context)
@@ -78,7 +79,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
                     }
 
                     if (isAttachedToWindow && mIsShow) {
-                        mContentView.visibility = VISIBLE
+                        mContentVisible = true
                         postInvalidate()
                     }
                 }
@@ -195,7 +196,6 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     override fun show() {
-        mContentView.visibility = VISIBLE
         when (mGravity) {
             TipGravity.LEFT -> {
                 showLeft()
@@ -353,10 +353,8 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         setWindowLocation(finalX, finalY)
         mLayoutParam.x = finalX
         mLayoutParam.y = finalY
-        initBitmap()
-        if (mAnimationType != AnimationType.NONE) {
-            mContentView.visibility = INVISIBLE
-        }
+        updateBitmap()
+        mContentVisible = mAnimationType == AnimationType.NONE
         mWindowManager.addView(this, mLayoutParam)
         mIsShow = true
         if (mAnimationType != AnimationType.NONE) {
@@ -364,13 +362,18 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         }
     }
 
-    private fun initBitmap() {
+    private fun updateBitmap(layout: Boolean = true) {
         recycleBitmap()
+        val oldVisible = mContentVisible
+        mContentVisible = true
         mBitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(mBitmap!!)
-        val windowRect = getWindowRect()
-        layout(windowRect.left, windowRect.top, windowRect.right, windowRect.bottom)
+        if (layout) {
+            val windowRect = getWindowRect()
+            layout(windowRect.left, windowRect.top, windowRect.right, windowRect.bottom)
+        }
         draw(canvas)
+        mContentVisible = oldVisible
     }
 
     private fun recycleBitmap() {
@@ -398,21 +401,21 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     override fun dismiss() {
         if (isAttachedToWindow) {
-            isClickable = false
-            mContentView.isClickable = false
-            mIsShow = false
             if (mAnimationType == AnimationType.NONE) {
                 mWindowManager.removeView(this)
                 return
             }
-            mContentView.visibility = INVISIBLE
-            invalidate()
+            updateBitmap(false)
+            isClickable = false
+            mContentView.isClickable = false
+            mIsShow = false
+            mContentVisible = false
             mAnimator.start()
         }
     }
 
     override fun onDraw(canvas: Canvas?) {
-        if (isAttachedToWindow && mBitmap != null && !isVisible(mContentView)) {
+        if (isAttachedToWindow && mBitmap != null && !mContentVisible) {
             resetCanvas(canvas)
             if (mIsShow) {
                 showEnterAnimation(canvas)
@@ -424,14 +427,18 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
         }
     }
 
-    override fun onDrawForeground(canvas: Canvas?) {
-        super.onDrawForeground(canvas)
-        if (isVisible(mContentView)) {
-            drawBubble(canvas)
+    override fun dispatchDraw(canvas: Canvas?) {
+        if (mContentVisible) {
+            super.dispatchDraw(canvas)
         }
     }
 
-    private fun isVisible(view: View) = view.visibility == View.VISIBLE
+    override fun onDrawForeground(canvas: Canvas?) {
+        super.onDrawForeground(canvas)
+        if (mContentVisible) {
+            drawBubble(canvas)
+        }
+    }
 
     private fun resetCanvas(canvas: Canvas?) {
         mAnimationPaint.reset()

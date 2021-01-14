@@ -87,8 +87,6 @@ class MainActivity : AppCompatActivity() {
         val tip5 = ViewToolTip.on(mBinding.text5)
             .customView(binding5.root)
             .gravity(TipGravity.TOP)
-            .arrowHeight(convertDp2Px(10, this))
-            .arrowWidth(convertDp2Px(24, this))
             .isAutoHide(false)
 
         mBinding.text5.setOnLongClickListener {
