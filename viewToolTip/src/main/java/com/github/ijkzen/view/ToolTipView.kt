@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.marginBottom
@@ -193,6 +194,14 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     override fun token(token: IBinder) {
         mLayoutParam.token = token
+    }
+
+    override fun animationTime(duration: Long) {
+        mAnimator.duration = duration
+    }
+
+    override fun interpolator(interpolator: Interpolator) {
+        mAnimator.interpolator = interpolator
     }
 
     override fun show() {

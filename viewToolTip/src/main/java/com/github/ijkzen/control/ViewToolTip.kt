@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.view.View
+import android.view.animation.Interpolator
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -281,6 +282,18 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
 
     override fun displayTime(duration: Long): ViewToolTip {
         mDuration = duration
+        return this
+    }
+
+    override fun animationTime(duration: Long): ToolTipConfiguration {
+        mMaskView.animationTime(duration)
+        mTipView.animationTime(duration)
+        return this
+    }
+
+    override fun interpolator(interpolator: Interpolator): ToolTipConfiguration {
+        mMaskView.interpolator(interpolator)
+        mTipView.interpolator(interpolator)
         return this
     }
 

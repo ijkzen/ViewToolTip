@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.IBinder
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.Interpolator
 import androidx.core.content.ContextCompat
 import com.github.ijkzen.R
 import com.github.ijkzen.getAnimationDuration
@@ -80,6 +81,16 @@ class MaskView(context: Context) : View(context), MaskViewConfiguration {
 
     override fun token(token: IBinder) {
         mLayoutParam.token = token
+    }
+
+    override fun animationTime(duration: Long) {
+        mStartValueAnimator.duration = duration
+        mEndValueAnimator.duration = duration
+    }
+
+    override fun interpolator(interpolator: Interpolator) {
+        mStartValueAnimator.interpolator = interpolator
+        mEndValueAnimator.interpolator = interpolator
     }
 
     override fun show() {

@@ -2,6 +2,7 @@ package com.github.ijkzen.control
 
 import android.graphics.drawable.GradientDrawable
 import android.view.View
+import android.view.animation.Interpolator
 import androidx.lifecycle.LifecycleOwner
 import com.github.ijkzen.view.AnimationType
 
@@ -46,6 +47,10 @@ interface ToolTipConfiguration {
     fun isAutoHide(auto: Boolean): ToolTipConfiguration
 
     fun displayTime(duration: Long): ToolTipConfiguration
+
+    fun animationTime(duration: Long): ToolTipConfiguration
+
+    fun interpolator(interpolator: Interpolator): ToolTipConfiguration
 
     fun setTag(tag: String): ToolTipConfiguration
 
