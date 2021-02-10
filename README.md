@@ -127,3 +127,9 @@ interface ToolTipConfiguration {
 ### More
 
 If you have any questions, please ask me [here](https://github.com/ijkzen/ViewToolTip/issues)
+
+## Support
+
+Thanks to JetBrains for supporting this project!
+
+[![](./preview/jetbrains.svg)](https://jb.gg/OpenSource)
