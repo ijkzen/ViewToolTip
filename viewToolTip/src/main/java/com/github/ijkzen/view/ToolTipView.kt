@@ -22,7 +22,7 @@ import com.github.ijkzen.*
 import com.github.ijkzen.control.TipGravity
 
 @SuppressLint("ViewConstructor")
-open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
+class ToolTipView : FrameLayout, ToolTipViewConfiguration {
 
     companion object {
         private val SRC_IN_MODE = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
@@ -569,7 +569,7 @@ open class ToolTipView : FrameLayout, ToolTipViewConfiguration {
     }
 
     private fun getMaxRadius(): Int {
-        var maxRadius: Int
+        val maxRadius: Int
         val points = getBubblePoints()
         if (points == null) {
             maxRadius = Math.hypot(measuredWidth.toDouble(), measuredHeight.toDouble()).toInt()

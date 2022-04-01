@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.lifecycle.Lifecycle
@@ -37,7 +38,7 @@ open class ViewToolTip(private val context: Context, protected val mTargetView: 
     private val screenWidth = screenWidth(context)
     private val screenHeight = screenHeight(context)
     private val padding = convertDp2Px(10, context)
-    private val mHandler = Handler {
+    private val mHandler = Handler(Looper.getMainLooper()) {
         val what = it.what
         if (what == AUTO_HIDE_MESSAGE) {
             dismiss()
